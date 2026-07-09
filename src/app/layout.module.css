@@ -1,0 +1,12 @@
+.mainContent {
+  margin-left: 260px; /* Sidebar width */
+  padding-top: 72px; /* TopBar height */
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
+}
+
+.pageContainer {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}

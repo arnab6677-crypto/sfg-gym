@@ -1,0 +1,110 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.searchBox {
+  position: relative;
+  width: 400px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 16px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-main);
+  font-size: 15px;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background-color: rgba(0,0,0,0.01);
+}
+
+.fw600 {
+  font-weight: 600;
+  color: var(--color-primary) !important;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badgeSuccess {
+  background-color: #D1FAE5;
+  color: #059669;
+}
+
+.badgeDanger {
+  background-color: #FEE2E2;
+  color: #DC2626;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px !important;
+  color: var(--color-text-secondary) !important;
+  font-style: italic;
+}

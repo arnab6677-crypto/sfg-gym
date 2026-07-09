@@ -1,0 +1,150 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.leftCol, .rightCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.marginTop {
+  margin-top: 24px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 20px;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.infoItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.infoLabel {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.infoValue {
+  font-size: 15px;
+  color: var(--color-text-main);
+  font-weight: 500;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.historyItem {
+  padding: 16px;
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.historyTop, .historyBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.planName {
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.amount {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.date, .receipt {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.empty {
+  color: var(--color-text-secondary);
+  font-style: italic;
+  font-size: 14px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badgeSuccess {
+  background-color: #D1FAE5;
+  color: #059669;
+}
+
+.badgeDanger {
+  background-color: #FEE2E2;
+  color: #DC2626;
+}

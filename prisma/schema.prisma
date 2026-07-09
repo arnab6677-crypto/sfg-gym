@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id               String    @id @default(uuid())
+  regNumber        String    @unique // SFG0001+
+  fullName         String
+  guardianName     String?
+  gender           String
+  dob              DateTime?
+  age              Int?
+  phone            String
+  altPhone         String?
+  address          String?
+  emergencyContact String?
+  joiningDate      DateTime  @default(now())
+  status           String    @default("ACTIVE") // ACTIVE, INACTIVE, OVERDUE
+  assignedTrainer  String?
+  medicalNotes     String?
+  remarks          String?
+  membershipType   String?   // Daily Pass, Monthly (Without Admission), Admission + Monthly, Quarterly, Half-Yearly, Yearly
+  ptPlan           String?   // None, Only Training, Only Diet, Full Coaching
+  admissionFeePaid Boolean   @default(false)
+  monthlyFeeAmount Float?
+  nextDueDate      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  payments         Payment[]
+}
+
+model MembershipPlan {
+  id           String    @id @default(uuid())
+  name         String    // One Day, Monthly, Quarterly, Half Yearly, Yearly
+  durationDays Int
+  price        Float
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  payments     Payment[]
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  memberId      String
+  planId        String
+  amount        Float
+  admissionFee  Float    @default(0)
+  ptFee         Float    @default(0)
+  ptPlan        String?  // None, Only Training, Only Diet, Full Coaching
+  discount      Float    @default(0)
+  finalAmount   Float
+  amountPaid    Float    @default(0)
+  balanceDue    Float    @default(0)
+  paymentMethod String   // CASH, UPI, CARD
+  receiptNumber String   @unique
+  paymentDate   DateTime @default(now())
+  nextDueDate   DateTime
+  promisedDate  DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  member        Member         @relation(fields: [memberId], references: [id])
+  plan          MembershipPlan @relation(fields: [planId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String   // DUE_FEE, EXPIRING_SOON, NEW_ADMISSION
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  id           String   @id @default(uuid())
+  gymName      String   @default("STRENGTH FUSION GYM")
+  admissionFee Float    @default(500)
+  adminPassword String   @default("admin123")
+  adminEmail    String   @default("admin@example.com")
+  trainers      String   @default("Sayon,Uday,Siddhart")
+  ptPlans       String   @default("None,Only Training,Only Diet,Full Coaching")
+  updatedAt     DateTime @updatedAt
+}
