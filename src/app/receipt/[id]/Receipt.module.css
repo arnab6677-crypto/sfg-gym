@@ -1,0 +1,169 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-padding: 40px;
+  min-height: 100vh;
+  background-color: var(--color-bg-main);
+  font-family: 'Inter', sans-serif;
+  padding: 40px 20px;
+}
+
+.invoice {
+  background: white;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  color: #111827;
+}
+
+.header {
+  background: #000;
+  color: white;
+  padding: 30px 40px;
+  text-align: center;
+}
+
+.gymName {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  color: #3b82f6; /* A cool blue accent */
+}
+
+.receiptTitle {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.body {
+  padding: 40px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #6b7280;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.table th {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
+  font-weight: 600;
+}
+
+.table td {
+  padding: 16px 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.table th.right, .table td.right {
+  text-align: right;
+}
+
+.totalRow td {
+  border-bottom: none;
+  padding-top: 20px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.totalAmount {
+  color: #3b82f6;
+  font-size: 24px;
+}
+
+.footer {
+  text-align: center;
+  padding: 30px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.footerText {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.downloadBtn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.downloadBtn:hover {
+  background: #2563eb;
+}
+
+@media print {
+  body {
+    background: white !important;
+  }
+  .container {
+    background: white !important;
+    padding: 0;
+    margin: 0;
+  }
+  .invoice {
+    box-shadow: none;
+    border: none;
+    max-width: 100%;
+  }
+  .actions {
+    display: none !important;
+  }
+}

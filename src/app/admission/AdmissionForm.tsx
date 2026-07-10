@@ -130,6 +130,9 @@ Your admission is successful!
 *Amount Paid:* ₹${finalAmount}
 *Receipt No:* ${result.receiptNumber || 'N/A'}
 
+📄 *View and download your official digital receipt:* 
+https://sfg-gym-website.vercel.app/receipt/${result.receiptNumber}
+
 We're excited to have you join us on your fitness journey. Whether your goal is to build muscle, lose weight, improve endurance, or simply stay fit, our team is here to support and motivate you every step of the way.
 
 📍 Gym Address:
