@@ -167,3 +167,96 @@
     display: none !important;
   }
 }
+
+/* Terms and Conditions Page */
+.termsPage {
+  background: white;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-top: 24px;
+  padding: 40px;
+  color: #1f2937;
+}
+
+@media print {
+  .termsPage {
+    box-shadow: none;
+    border: none;
+    margin-top: 0;
+    max-width: 100%;
+    page-break-before: always;
+    break-before: page;
+  }
+}
+
+.termsHeader {
+  text-align: center;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 16px;
+}
+
+.termsHeader h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #3b82f6;
+  text-transform: uppercase;
+  margin: 0 0 8px 0;
+  letter-spacing: 1px;
+}
+
+.termsHeader h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.termsIntro {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.termsList {
+  font-size: 13px;
+  line-height: 1.6;
+  padding-left: 20px;
+  margin-bottom: 24px;
+}
+
+.termsList li {
+  margin-bottom: 12px;
+}
+
+.penaltiesTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ef4444;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.penaltiesList {
+  font-size: 13px;
+  line-height: 1.6;
+  padding-left: 20px;
+  margin-bottom: 24px;
+}
+
+.penaltiesList li {
+  margin-bottom: 8px;
+}
+
+.termsConclusion {
+  font-size: 13px;
+  text-align: center;
+  background: #f3f4f6;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 32px;
+}
