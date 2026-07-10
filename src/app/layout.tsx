@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
+import LayoutWrapper from "@/components/LayoutWrapper";
 import styles from "./layout.module.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,13 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Sidebar />
-        <TopBar />
-        <main className={styles.mainContent}>
-          <div className={styles.pageContainer}>
-            {children}
-          </div>
-        </main>
+        <LayoutWrapper sidebar={<Sidebar />} topbar={<TopBar />}>
+          {children}
+        </LayoutWrapper>
       </body>
     </html>
   );

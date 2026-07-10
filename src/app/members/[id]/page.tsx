@@ -7,11 +7,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import styles from './Profile.module.css';
 
-export default async function MemberProfile({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function MemberProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
   
   const member = await prisma.member.findUnique({
-    where: { id },
+    where: { id: resolvedParams.id },
     include: {
       payments: {
         orderBy: { paymentDate: 'desc' },
