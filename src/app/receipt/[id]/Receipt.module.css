@@ -1,7 +1,8 @@
 .container {
   display: flex;
-  justify-content: center;
-  align-padding: 40px;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
   min-height: 100vh;
   background-color: var(--color-bg-main);
   font-family: 'Inter', sans-serif;
@@ -185,6 +186,7 @@
     box-shadow: none;
     border: none;
     margin-top: 0;
+    padding: 20px 0;
     max-width: 100%;
     page-break-before: always;
     break-before: page;

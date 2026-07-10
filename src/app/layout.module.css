@@ -10,3 +10,13 @@
   max-width: 1400px;
   margin: 0 auto;
 }
+
+@media (max-width: 768px) {
+  .mainContent {
+    margin-left: 0;
+    padding-bottom: 70px; /* Space for bottom nav */
+  }
+  .pageContainer {
+    padding: 16px;
+  }
+}
