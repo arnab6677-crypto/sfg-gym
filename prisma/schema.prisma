@@ -82,8 +82,8 @@ model Notification {
 model Settings {
   id           String   @id @default(uuid())
   gymName      String   @default("STRENGTH FUSION GYM")
-  admissionFee Float    @default(500)
-  adminPassword String   @default("admin123")
+  admissionFee  Float    @default(500)
+  adminPassword String   @default("123456")
   adminEmail    String   @default("admin@example.com")
   trainers      String   @default("Sayon,Uday,Siddhart")
   ptPlans       String   @default("None,Only Training,Only Diet,Full Coaching")

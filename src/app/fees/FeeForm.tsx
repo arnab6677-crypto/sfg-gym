@@ -33,6 +33,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
   const [discount, setDiscount] = useState<number | string>('');
   const [amountPaid, setAmountPaid] = useState<number | string>('');
   const [promisedDate, setPromisedDate] = useState<Date | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [memberId, setMemberId] = useState(initialMemberId || (members.length > 0 ? members[0].id : ''));
   
   const [ptPlan, setPtPlan] = useState<string>('None');
@@ -140,11 +141,24 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
         <h3 className={styles.sectionTitle}>Select Member</h3>
         <div className={styles.grid}>
           <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
+            <Input 
+              label="Search Member (Name, Phone, ID)" 
+              name="searchDummy"
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+              placeholder="Start typing to filter the list below..." 
+            />
+          </div>
+          <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
             <label className={styles.label}>Member *</label>
             <select value={memberId} onChange={(e) => setMemberId(e.target.value)} className={styles.select} required>
               <option value="" disabled>-- Select a member --</option>
-              {members.map(m => (
-                <option key={m.id} value={m.id}>{m.regNumber} - {m.fullName}</option>
+              {members.filter(m => 
+                m.fullName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                m.phone.includes(searchTerm) ||
+                m.regNumber.toLowerCase().includes(searchTerm.toLowerCase())
+              ).map(m => (
+                <option key={m.id} value={m.id}>{m.regNumber} - {m.fullName} ({m.phone})</option>
               ))}
             </select>
           </div>
