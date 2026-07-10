@@ -8,8 +8,9 @@ export const metadata: Metadata = {
   description: 'Official Digital Receipt',
 };
 
-export default async function ReceiptPage({ params }: { params: { id: string } }) {
-  const receiptNumber = params.id;
+export default async function ReceiptPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const receiptNumber = resolvedParams.id;
   
   const payment = await prisma.payment.findUnique({
     where: { receiptNumber },
