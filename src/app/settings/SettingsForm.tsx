@@ -68,13 +68,6 @@ export default function SettingsForm({ initialData }: { initialData: SettingsDat
       </div>
 
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Security</h3>
-        <div className={styles.grid}>
-          <Input label="New Admin Password" type="password" name="adminPassword" placeholder="Leave blank to keep current password" />
-        </div>
-      </div>
-
-      <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Database (Advanced)</h3>
         <div className={styles.grid}>
           <div style={{ display: 'flex', gap: '16px', gridColumn: '1 / -1' }}>

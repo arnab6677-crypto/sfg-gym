@@ -44,7 +44,7 @@ export default function ProfileDropdown() {
               <Settings size={16} />
               <span>Gym Settings</span>
             </Link>
-            <Link href="/settings" className={styles.menuItem} onClick={() => setIsOpen(false)}>
+            <Link href="/settings/password" className={styles.menuItem} onClick={() => setIsOpen(false)}>
               <KeyRound size={16} />
               <span>Change Password</span>
             </Link>
