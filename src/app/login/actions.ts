@@ -15,7 +15,8 @@ export async function login(formData: FormData) {
 
     if (password === validPassword) {
       // Set the auth cookie
-      cookies().set('sfg_admin_auth', 'true', {
+      const cookieStore = await cookies();
+      cookieStore.set('sfg_admin_auth', 'true', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: 60 * 60 * 24 * 30, // 30 days
@@ -33,6 +34,7 @@ export async function login(formData: FormData) {
 }
 
 export async function logout() {
-  cookies().delete('sfg_admin_auth');
+  const cookieStore = await cookies();
+  cookieStore.delete('sfg_admin_auth');
   redirect('/login');
 }
