@@ -1,0 +1,134 @@
+.container {
+  position: relative;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-md);
+  transition: background-color 0.2s ease;
+}
+
+.profile:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.adminName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.role {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Dropdown styling */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 220px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  z-index: 100;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownHeader {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.dropdownEmail {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.dropdownBody {
+  padding: 8px 0;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--color-text-main);
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.menuItem:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-primary);
+}
+
+.dropdownFooter {
+  border-top: 1px solid var(--color-border);
+  padding: 8px 0;
+}
+
+.logoutButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: #EF4444;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: #FEF2F2;
+}
+
+@media (max-width: 768px) {
+  .profileInfo {
+    display: none;
+  }
+}

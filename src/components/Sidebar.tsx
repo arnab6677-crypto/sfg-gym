@@ -13,10 +13,8 @@ import {
   BarChart, 
   Clock,
   Settings, 
-  LogOut,
   Dumbbell
 } from 'lucide-react';
-import { logout } from '@/app/login/actions';
 import styles from './Sidebar.module.css';
 
 const menuItems = [
@@ -70,13 +68,6 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
-
-      <div className={styles.footer}>
-        <button className={styles.logoutButton} onClick={() => logout()}>
-          <LogOut size={20} />
-          <span>Logout</span>
-        </button>
-      </div>
     </aside>
   );
 }

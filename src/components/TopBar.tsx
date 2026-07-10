@@ -1,6 +1,7 @@
 import { Bell, User } from 'lucide-react';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
+import ProfileDropdown from './ProfileDropdown';
 import styles from './TopBar.module.css';
 
 export default async function TopBar() {
@@ -26,15 +27,7 @@ export default async function TopBar() {
           {overdueCount > 0 && <span className={styles.badge}>{overdueCount}</span>}
         </Link>
 
-        <div className={styles.profile}>
-          <div className={styles.avatar}>
-            <User size={20} />
-          </div>
-          <div className={styles.profileInfo}>
-            <span className={styles.adminName}>Admin</span>
-            <span className={styles.role}>Owner</span>
-          </div>
-        </div>
+        <ProfileDropdown />
       </div>
     </header>
   );
