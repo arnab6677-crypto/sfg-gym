@@ -109,7 +109,7 @@ export function ExpenseCategoriesChart({ data }: { data: any[] }) {
           </Pie>
           <Tooltip 
             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-soft)' }}
-            formatter={(value: number) => `₹${value}`}
+            formatter={(value: any) => `₹${value}`}
           />
           <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
         </PieChart>

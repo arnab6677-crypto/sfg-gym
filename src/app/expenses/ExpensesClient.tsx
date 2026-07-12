@@ -103,7 +103,7 @@ export default function ExpensesClient({ expenses }: { expenses: any[] }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-        <Card padding="md" style={{ backgroundColor: 'var(--color-bg-main)' }}>
+        <Card padding="md">
           <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>Filtered Total</p>
           <h3 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)', marginTop: '4px' }}>
             ₹{totalFilteredAmount.toLocaleString()}
