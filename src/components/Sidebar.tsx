@@ -13,7 +13,8 @@ import {
   BarChart, 
   Clock,
   Settings, 
-  Dumbbell
+  Dumbbell,
+  Wallet
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
@@ -23,6 +24,7 @@ const menuItems = [
   { name: 'PT Members', path: '/pt-members', icon: Dumbbell },
   { name: 'New Admission', path: '/admission', icon: UserPlus },
   { name: 'Fee Collection', path: '/fees', icon: IndianRupee },
+  { name: 'Expenses', path: '/expenses', icon: Wallet },
   { name: 'Payment History', path: '/history', icon: History },
   { name: 'Due Fees', path: '/due-fees', icon: AlertTriangle },
   { name: 'Reports', path: '/reports', icon: BarChart },
