@@ -27,6 +27,7 @@ export default function AdmissionForm({ plans, defaultAdmissionFee, trainers, pt
   const [amountPaid, setAmountPaid] = useState<number | string>('');
   const [promisedDate, setPromisedDate] = useState<Date | null>(null);
   const [joiningDate, setJoiningDate] = useState<Date | null>(new Date());
+  const [customNextDueDate, setCustomNextDueDate] = useState<Date | null>(null);
   
   // PT State
   const [ptPlan, setPtPlan] = useState<string>('None');
@@ -110,6 +111,9 @@ export default function AdmissionForm({ plans, defaultAdmissionFee, trainers, pt
     // Add date formatting explicitly
     if (joiningDate) {
       formData.set('joiningDate', joiningDate.toISOString());
+    }
+    if (customNextDueDate) {
+      formData.set('customNextDueDate', customNextDueDate.toISOString());
     }
 
     const result = await createAdmission(formData);
@@ -217,6 +221,11 @@ We wish you success in achieving your fitness goals and look forward to seeing y
           <div className={styles.inputGroup}>
             <label className={styles.label}>Joining Date *</label>
             <CustomDatePicker selected={joiningDate} onChange={(date) => setJoiningDate(date)} name="joiningDateDummy" />
+          </div>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Custom Next Due Date (Optional)</label>
+            <CustomDatePicker selected={customNextDueDate} onChange={(date) => setCustomNextDueDate(date)} name="customNextDueDateDummy" />
+            <p style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Use this for old members to manually set when their next payment is due.</p>
           </div>
           <Input label="Address" name="address" className={styles.fullSpan} />
           <Input label="Emergency Contact" name="emergencyContact" className={styles.fullSpan} />

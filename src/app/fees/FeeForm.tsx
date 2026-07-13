@@ -165,31 +165,6 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
         </div>
       </div>
 
-      {selectedMember && (
-        <div className={styles.section} style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
-          <h4 style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-text-secondary)', marginBottom: '12px' }}>Current Membership Status</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-            <div>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Type</div>
-              <div style={{ fontWeight: 600 }}>{selectedMember.membershipType || 'N/A'}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Monthly Fee</div>
-              <div style={{ fontWeight: 600 }}>{selectedMember.monthlyFeeAmount ? `₹${selectedMember.monthlyFeeAmount}` : 'N/A'}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Last Payment</div>
-              <div style={{ fontWeight: 600 }}>{selectedMember.payments[0] ? formatDate(selectedMember.payments[0].paymentDate) : 'N/A'}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Next Due Date</div>
-              <div style={{ fontWeight: 600, color: selectedMember.nextDueDate && new Date(selectedMember.nextDueDate) < new Date() ? 'red' : 'inherit' }}>
-                {formatDate(selectedMember.nextDueDate)}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Personal Training (Optional)</h3>

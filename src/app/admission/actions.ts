@@ -45,6 +45,8 @@ export async function createAdmission(formData: FormData) {
     const paymentMethod = formData.get('paymentMethod') as string;
     const promisedDateStr = formData.get('promisedDate') as string;
     const promisedDate = promisedDateStr ? new Date(promisedDateStr) : undefined;
+    
+    const customNextDueDateStr = formData.get('customNextDueDate') as string;
 
     // Generate Receipt Number
     const lastPayment = await prisma.payment.findFirst({
@@ -68,8 +70,12 @@ export async function createAdmission(formData: FormData) {
     const plan = await prisma.membershipPlan.findUnique({ where: { id: planId } });
     if (!plan) throw new Error("Plan not found");
 
-    const nextDueDate = new Date(joiningDate);
-    nextDueDate.setDate(nextDueDate.getDate() + plan.durationDays);
+    let nextDueDate = new Date(joiningDate);
+    if (customNextDueDateStr) {
+      nextDueDate = new Date(customNextDueDateStr);
+    } else {
+      nextDueDate.setDate(nextDueDate.getDate() + plan.durationDays);
+    }
 
     // Create Transaction
     const member = await prisma.$transaction(async (tx) => {

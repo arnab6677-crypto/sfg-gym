@@ -137,7 +137,15 @@
   }
   
   .gymName {
-    font-size: 14px;
+    font-size: 16px;
+  }
+  
+  .searchContainer {
+    width: 160px;
+  }
+  
+  .actions {
+    gap: 12px;
   }
   
   .profileInfo {
