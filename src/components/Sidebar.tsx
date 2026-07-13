@@ -14,7 +14,8 @@ import {
   Clock,
   Settings, 
   Dumbbell,
-  Wallet
+  Wallet,
+  ShoppingCart
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
@@ -24,6 +25,7 @@ const menuItems = [
   { name: 'PT Members', path: '/pt-members', icon: Dumbbell },
   { name: 'New Admission', path: '/admission', icon: UserPlus },
   { name: 'Fee Collection', path: '/fees', icon: IndianRupee },
+  { name: 'Store', path: '/store', icon: ShoppingCart },
   { name: 'Expenses', path: '/expenses', icon: Wallet },
   { name: 'Payment History', path: '/history', icon: History },
   { name: 'Due Fees', path: '/due-fees', icon: AlertTriangle },

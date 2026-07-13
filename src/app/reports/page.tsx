@@ -13,11 +13,15 @@ export default async function ReportsPage() {
     _sum: { finalAmount: true },
     where: { paymentDate: { gte: startOfDay } }
   });
+  const dailyStoreSales = await prisma.storeSale.aggregate({
+    _sum: { totalAmount: true },
+    where: { date: { gte: startOfDay } }
+  });
   const dailyExpenses = await prisma.expense.aggregate({
     _sum: { amount: true },
     where: { date: { gte: startOfDay } }
   });
-  const dailyCollection = dailyPayments._sum.finalAmount || 0;
+  const dailyCollection = (dailyPayments._sum.finalAmount || 0) + (dailyStoreSales._sum.totalAmount || 0);
   const dailyExpenseAmt = dailyExpenses._sum.amount || 0;
   const dailyProfit = dailyCollection - dailyExpenseAmt;
 
@@ -27,11 +31,15 @@ export default async function ReportsPage() {
     _sum: { finalAmount: true },
     where: { paymentDate: { gte: startOfMonth } }
   });
+  const monthlyStoreSales = await prisma.storeSale.aggregate({
+    _sum: { totalAmount: true },
+    where: { date: { gte: startOfMonth } }
+  });
   const monthlyExpenses = await prisma.expense.aggregate({
     _sum: { amount: true },
     where: { date: { gte: startOfMonth } }
   });
-  const monthlyCollection = monthlyPayments._sum.finalAmount || 0;
+  const monthlyCollection = (monthlyPayments._sum.finalAmount || 0) + (monthlyStoreSales._sum.totalAmount || 0);
   const monthlyExpenseAmt = monthlyExpenses._sum.amount || 0;
   const monthlyProfit = monthlyCollection - monthlyExpenseAmt;
 
@@ -41,11 +49,15 @@ export default async function ReportsPage() {
     _sum: { finalAmount: true },
     where: { paymentDate: { gte: startOfYear } }
   });
+  const yearlyStoreSales = await prisma.storeSale.aggregate({
+    _sum: { totalAmount: true },
+    where: { date: { gte: startOfYear } }
+  });
   const yearlyExpenses = await prisma.expense.aggregate({
     _sum: { amount: true },
     where: { date: { gte: startOfYear } }
   });
-  const yearlyCollection = yearlyPayments._sum.finalAmount || 0;
+  const yearlyCollection = (yearlyPayments._sum.finalAmount || 0) + (yearlyStoreSales._sum.totalAmount || 0);
   const yearlyExpenseAmt = yearlyExpenses._sum.amount || 0;
   const yearlyProfit = yearlyCollection - yearlyExpenseAmt;
 
