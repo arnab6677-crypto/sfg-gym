@@ -61,6 +61,81 @@ export default async function ReportsPage() {
   const yearlyExpenseAmt = yearlyExpenses._sum.amount || 0;
   const yearlyProfit = yearlyCollection - yearlyExpenseAmt;
 
+  // --- CHART DATA CALCULATIONS ---
+  // Last 30 Days Revenue Chart Data
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+
+  const recentPayments = await prisma.payment.findMany({
+    where: {
+      paymentDate: { gte: thirtyDaysAgo }
+    },
+    select: {
+      paymentDate: true,
+      finalAmount: true
+    }
+  });
+
+  const dailyRevenueMap = new Map<string, number>();
+  
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+    dailyRevenueMap.set(dateStr, 0);
+  }
+
+  recentPayments.forEach(payment => {
+    const d = new Date(payment.paymentDate);
+    const dateStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+    if (dailyRevenueMap.has(dateStr)) {
+      dailyRevenueMap.set(dateStr, dailyRevenueMap.get(dateStr)! + payment.finalAmount);
+    }
+  });
+
+  const recentExpenses = await prisma.expense.findMany({
+    where: { date: { gte: thirtyDaysAgo } }
+  });
+
+  const dailyExpensesMap = new Map<string, number>();
+  
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+    dailyExpensesMap.set(dateStr, 0);
+  }
+
+  recentExpenses.forEach(expense => {
+    const d = new Date(expense.date);
+    const dateStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+    if (dailyExpensesMap.has(dateStr)) {
+      dailyExpensesMap.set(dateStr, dailyExpensesMap.get(dateStr)! + expense.amount);
+    }
+  });
+
+  const incomeVsExpensesData = Array.from(dailyRevenueMap.entries()).map(([name, income]) => ({
+    name,
+    income,
+    expenses: dailyExpensesMap.get(name) || 0
+  }));
+
+  // Expense Categories Data (for the pie chart)
+  const monthlyExpensesList = await prisma.expense.findMany({
+    where: { date: { gte: startOfMonth } }
+  });
+
+  const categoriesMap = new Map<string, number>();
+  monthlyExpensesList.forEach(expense => {
+    categoriesMap.set(expense.category, (categoriesMap.get(expense.category) || 0) + expense.amount);
+  });
+
+  const categoriesChartData = Array.from(categoriesMap.entries()).map(([name, value]) => ({
+    name,
+    value
+  })).sort((a, b) => b.value - a.value);
+
+  return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
@@ -76,7 +151,8 @@ export default async function ReportsPage() {
         data={{
           dailyCollection, dailyExpenseAmt, dailyProfit,
           monthlyCollection, monthlyExpenseAmt, monthlyProfit,
-          yearlyCollection, yearlyExpenseAmt, yearlyProfit
+          yearlyCollection, yearlyExpenseAmt, yearlyProfit,
+          incomeVsExpensesData, categoriesChartData
         }}
       />
     </div>

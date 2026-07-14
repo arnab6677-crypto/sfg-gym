@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { Lock, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { RevenueChart, IncomeVsExpensesChart, ExpenseCategoriesChart } from '../DashboardCharts';
 
 interface ReportsData {
   dailyCollection: number;
@@ -15,6 +16,8 @@ interface ReportsData {
   yearlyCollection: number;
   yearlyExpenseAmt: number;
   yearlyProfit: number;
+  incomeVsExpensesData: any[];
+  categoriesChartData: any[];
 }
 
 export default function ReportsClient({ data }: { data: ReportsData }) {
@@ -159,6 +162,27 @@ export default function ReportsClient({ data }: { data: ReportsData }) {
             <h3 style={{ fontSize: '24px', fontWeight: 700, color: data.yearlyProfit >= 0 ? '#10B981' : '#EF4444', marginTop: '8px' }}>
               ₹{data.yearlyProfit.toLocaleString()}
             </h3>
+          </Card>
+        </div>
+      </div>
+
+      {/* CHARTS */}
+      <div>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Financial Charts</h2>
+        <Card padding="lg" style={{ marginBottom: '24px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Income vs Expenses (Last 30 Days)</h3>
+          <IncomeVsExpensesChart data={data.incomeVsExpensesData} />
+        </Card>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+          <Card padding="lg">
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Revenue Trend (Last 30 Days)</h3>
+            <RevenueChart data={data.incomeVsExpensesData.map((d: any) => ({ name: d.name, revenue: d.income }))} />
+          </Card>
+          
+          <Card padding="lg">
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Expense Categories (This Month)</h3>
+            <ExpenseCategoriesChart data={data.categoriesChartData} />
           </Card>
         </div>
       </div>
