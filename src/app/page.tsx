@@ -35,7 +35,7 @@ export default async function Dashboard() {
     include: { plan: true }
   });
   
-  const feesDue = pastPayments.reduce((acc, p) => acc + p.plan.price, 0);
+  const feesDue = pastPayments.reduce((acc, p) => acc + (p.plan?.price || 0), 0);
 
   const stats = [
     { label: "Total Members", value: totalMembers.toString(), icon: Users, color: "#3B82F6" },
