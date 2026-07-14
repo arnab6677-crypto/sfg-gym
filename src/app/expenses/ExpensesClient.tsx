@@ -82,21 +82,21 @@ export default function ExpensesClient({ expenses }: { expenses: any[] }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'var(--color-text-main)' }}>Expense Tracker</h1>
           <p style={{ color: 'var(--color-text-secondary)', marginTop: '4px' }}>
             Manage gym expenses and track your outgoing cash flow.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <Button onClick={exportCSV} variant="outline" style={{ gap: '8px', display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+          <Button onClick={exportCSV} variant="outline" style={{ gap: '8px', display: 'flex', alignItems: 'center', flex: '1 1 auto', justifyContent: 'center' }}>
             <Download size={16} /> CSV
           </Button>
-          <Button onClick={exportPDF} variant="outline" style={{ gap: '8px', display: 'flex', alignItems: 'center' }}>
+          <Button onClick={exportPDF} variant="outline" style={{ gap: '8px', display: 'flex', alignItems: 'center', flex: '1 1 auto', justifyContent: 'center' }}>
             <FileText size={16} /> Print/PDF
           </Button>
-          <Button onClick={handleAddNew} style={{ gap: '8px', display: 'flex', alignItems: 'center' }}>
+          <Button onClick={handleAddNew} style={{ gap: '8px', display: 'flex', alignItems: 'center', flex: '1 1 auto', justifyContent: 'center' }}>
             <Plus size={16} /> Add Expense
           </Button>
         </div>

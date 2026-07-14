@@ -28,15 +28,7 @@ export default function ProfileDropdown() {
             src="/admin.jpg" 
             alt="Admin" 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              const nextEl = e.currentTarget.nextElementSibling as HTMLElement;
-              if (nextEl) nextEl.style.display = 'flex';
-            }}
           />
-          <div style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#3b82f6', color: 'white' }}>
-            <User size={20} />
-          </div>
         </div>
         <div className={styles.profileInfo}>
           <span className={styles.adminName}>Admin</span>
@@ -48,7 +40,7 @@ export default function ProfileDropdown() {
         <div className={styles.dropdown}>
           <div className={styles.dropdownHeader}>
             <span className={styles.dropdownName}>Admin</span>
-            <span className={styles.dropdownEmail}>owner@sfg.com</span>
+            <span className={styles.dropdownEmail}>sfg.silchar@gmail.com</span>
           </div>
           
           <div className={styles.dropdownBody}>
