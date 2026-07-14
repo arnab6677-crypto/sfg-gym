@@ -39,92 +39,63 @@ export async function logout() {
   cookieStore.delete('sfg_admin_auth');
   redirect('/login');
 }
-
-export async function sendOtp() {
+export async function getSecurityQuestions() {
   try {
     const settings = await prisma.settings.findFirst();
     if (!settings) return { success: false, error: 'System settings not found' };
 
-    // Generate a 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date();
-    expiry.setMinutes(expiry.getMinutes() + 10); // Expires in 10 mins
-
-    // Save to database
-    await prisma.settings.update({
-      where: { id: settings.id },
-      data: {
-        resetOtp: otp,
-        resetOtpExpiry: expiry
-      }
-    });
-
-    // Configure Nodemailer
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'sfg.silchar@gmail.com',
-        pass: process.env.GMAIL_APP_PASSWORD || '' // MUST be set in .env
-      }
-    });
-
-    if (!process.env.GMAIL_APP_PASSWORD) {
-      return { success: false, error: 'Email sending is not configured (Missing GMAIL_APP_PASSWORD)' };
-    }
-
-    const mailOptions = {
-      from: 'STRENGTH FUSION GYM <sfg.silchar@gmail.com>',
-      to: 'sfg.silchar@gmail.com',
-      subject: 'Password Reset OTP',
-      text: `Your password reset OTP is: ${otp}\n\nIt will expire in 10 minutes. If you did not request this, please ignore this email.`
+    return { 
+      success: true, 
+      question1: settings.securityQuestion1, 
+      question2: settings.securityQuestion2 
     };
-
-    await transporter.sendMail(mailOptions);
-    return { success: true };
   } catch (error) {
-    console.error("Failed to send OTP:", error);
-    return { success: false, error: 'Failed to send OTP email' };
+    console.error("Failed to fetch security questions:", error);
+    return { success: false, error: 'Server error occurred' };
   }
 }
 
-export async function verifyOtp(otp: string) {
+export async function verifySecurityAnswers(answer1: string, answer2: string) {
   try {
     const settings = await prisma.settings.findFirst();
-    if (!settings) return { success: false, error: 'Settings not found' };
+    if (!settings) return { success: false, error: 'System settings not found' };
 
-    if (!settings.resetOtp || settings.resetOtp !== otp) {
-      return { success: false, error: 'Invalid OTP' };
-    }
+    // Standardize answers for comparison (lowercase, trimmed)
+    const valid1 = settings.securityAnswer1?.toLowerCase().trim() === answer1.toLowerCase().trim();
+    const valid2 = settings.securityAnswer2?.toLowerCase().trim() === answer2.toLowerCase().trim();
 
-    if (!settings.resetOtpExpiry || settings.resetOtpExpiry < new Date()) {
-      return { success: false, error: 'OTP has expired' };
+    if (!valid1 || !valid2) {
+      return { success: false, error: 'Incorrect answers to security questions' };
     }
 
     return { success: true };
   } catch (error) {
-    console.error("OTP verification error:", error);
-    return { success: false, error: 'Server error' };
+    console.error("Failed to verify security answers:", error);
+    return { success: false, error: 'Server error occurred' };
   }
 }
 
-export async function resetPassword(newPassword: string) {
+export async function resetPasswordWithSecurity(newPassword: string, answer1: string, answer2: string) {
   try {
     const settings = await prisma.settings.findFirst();
-    if (!settings) return { success: false, error: 'Settings not found' };
+    if (!settings) return { success: false, error: 'System settings not found' };
 
-    // Update password and clear OTP
+    const valid1 = settings.securityAnswer1?.toLowerCase().trim() === answer1.toLowerCase().trim();
+    const valid2 = settings.securityAnswer2?.toLowerCase().trim() === answer2.toLowerCase().trim();
+
+    if (!valid1 || !valid2) {
+      return { success: false, error: 'Security verification failed' };
+    }
+
+    // Update password
     await prisma.settings.update({
       where: { id: settings.id },
-      data: {
-        adminPassword: newPassword,
-        resetOtp: null,
-        resetOtpExpiry: null
-      }
+      data: { adminPassword: newPassword }
     });
 
     return { success: true };
   } catch (error) {
-    console.error("Password reset error:", error);
-    return { success: false, error: 'Failed to reset password' };
+    console.error("Failed to reset password:", error);
+    return { success: false, error: 'Server error occurred' };
   }
 }
