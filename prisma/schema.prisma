@@ -87,6 +87,8 @@ model Settings {
   adminEmail    String   @default("admin@example.com")
   trainers      String   @default("Sayon,Uday,Siddhart")
   ptPlans       String   @default("None,Only Training,Only Diet,Full Coaching")
+  resetOtp      String?
+  resetOtpExpiry DateTime?
   updatedAt     DateTime @updatedAt
 }
 
