@@ -61,7 +61,6 @@ export default async function ReportsPage() {
   const yearlyExpenseAmt = yearlyExpenses._sum.amount || 0;
   const yearlyProfit = yearlyCollection - yearlyExpenseAmt;
 
-  return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
@@ -73,97 +72,13 @@ export default async function ReportsPage() {
         </Button>
       </div>
 
-      {/* TODAY'S BREAKDOWN */}
-      <div>
-        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Today's Breakdown</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingUp size={20} color="#10B981" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Income</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)', marginTop: '8px' }}>₹{dailyCollection.toLocaleString()}</h3>
-          </Card>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingDown size={20} color="#EF4444" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Expenses</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)', marginTop: '8px' }}>₹{dailyExpenseAmt.toLocaleString()}</h3>
-          </Card>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <DollarSign size={20} color="var(--color-primary)" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Net Profit</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: dailyProfit >= 0 ? '#10B981' : '#EF4444', marginTop: '8px' }}>
-              ₹{dailyProfit.toLocaleString()}
-            </h3>
-          </Card>
-        </div>
-      </div>
-
-      {/* THIS MONTH'S BREAKDOWN */}
-      <div>
-        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>This Month's Breakdown</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingUp size={20} color="#10B981" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Income</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)', marginTop: '8px' }}>₹{monthlyCollection.toLocaleString()}</h3>
-          </Card>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingDown size={20} color="#EF4444" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Expenses</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)', marginTop: '8px' }}>₹{monthlyExpenseAmt.toLocaleString()}</h3>
-          </Card>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <DollarSign size={20} color="var(--color-primary)" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Net Profit</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: monthlyProfit >= 0 ? '#10B981' : '#EF4444', marginTop: '8px' }}>
-              ₹{monthlyProfit.toLocaleString()}
-            </h3>
-          </Card>
-        </div>
-      </div>
-
-      {/* THIS YEAR'S BREAKDOWN */}
-      <div>
-        <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>This Year's Breakdown</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingUp size={20} color="#10B981" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Income</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)', marginTop: '8px' }}>₹{yearlyCollection.toLocaleString()}</h3>
-          </Card>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingDown size={20} color="#EF4444" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Expenses</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)', marginTop: '8px' }}>₹{yearlyExpenseAmt.toLocaleString()}</h3>
-          </Card>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <DollarSign size={20} color="var(--color-primary)" />
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Net Profit</p>
-            </div>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, color: yearlyProfit >= 0 ? '#10B981' : '#EF4444', marginTop: '8px' }}>
-              ₹{yearlyProfit.toLocaleString()}
-            </h3>
-          </Card>
-        </div>
-      </div>
-
-      <ReportsClient />
+      <ReportsClient 
+        data={{
+          dailyCollection, dailyExpenseAmt, dailyProfit,
+          monthlyCollection, monthlyExpenseAmt, monthlyProfit,
+          yearlyCollection, yearlyExpenseAmt, yearlyProfit
+        }}
+      />
     </div>
   );
 }
