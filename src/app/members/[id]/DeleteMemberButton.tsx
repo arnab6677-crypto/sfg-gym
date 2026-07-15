@@ -21,6 +21,9 @@ export function DeleteMemberButton({ memberId }: { memberId: string }) {
         setIsDeleting(false);
       }
     } catch (e: any) {
+      if (e.message && e.message.includes('NEXT_REDIRECT')) {
+        throw e;
+      }
       alert("Error deleting member: " + e.message);
       setIsDeleting(false);
     }
