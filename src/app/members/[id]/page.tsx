@@ -6,6 +6,7 @@ import { formatDate } from '@/lib/formatDate';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import styles from './Profile.module.css';
+import { DeleteMemberButton } from './DeleteMemberButton';
 
 export default async function MemberProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -48,9 +49,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
           <Button variant="outline">
             <Printer size={18} /> Print
           </Button>
-          <Button variant="danger">
-            <Trash2 size={18} /> Delete
-          </Button>
+          <DeleteMemberButton memberId={member.id} />
         </div>
       </div>
 
