@@ -3,8 +3,16 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Download, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import ReportsClient from './ReportsClient';
-
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 export default async function ReportsPage() {
+  const cookieStore = await cookies();
+  const reportsAuth = cookieStore.get('sfg_reports_auth');
+  
+  if (!reportsAuth) {
+    redirect('/reports/login');
+  }
+
   const today = new Date();
   
   // Calculate Daily Collection & Expenses

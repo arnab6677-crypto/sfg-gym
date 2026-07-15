@@ -89,6 +89,9 @@ model Settings {
   ptPlans           String   @default("None,Only Training,Only Diet,Full Coaching")
   resetOtp          String?
   resetOtpExpiry    DateTime?
+  reportsPassword   String   @default("admin123")
+  reportsResetOtp   String?
+  reportsResetOtpExpiry DateTime?
   updatedAt         DateTime @updatedAt
 }
 
