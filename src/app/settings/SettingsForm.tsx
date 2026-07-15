@@ -12,8 +12,6 @@ interface SettingsData {
   adminEmail: string;
   trainers: string;
   ptPlans: string;
-  securityQuestion1?: string;
-  securityQuestion2?: string;
 }
 
 export default function SettingsForm({ initialData }: { initialData: SettingsData }) {
@@ -69,30 +67,6 @@ export default function SettingsForm({ initialData }: { initialData: SettingsDat
         </div>
       </div>
 
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Security Settings (Forgot Password Recovery)</h3>
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px', marginBottom: '16px' }}>
-          These questions will be asked if you forget your admin password.
-        </p>
-        <div className={styles.grid}>
-          <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
-            <label className={styles.label}>Security Question 1 *</label>
-            <input type="text" name="securityQuestion1" defaultValue={initialData.securityQuestion1 || "What city were you born in?"} className={styles.input} required />
-          </div>
-          <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
-            <label className={styles.label}>Answer 1 (Leave blank to keep existing)</label>
-            <input type="password" name="securityAnswer1" placeholder="Enter new answer to update" className={styles.input} />
-          </div>
-          
-          <div className={styles.inputGroup} style={{ gridColumn: '1 / -1', marginTop: '12px' }}>
-            <label className={styles.label}>Security Question 2 *</label>
-            <input type="text" name="securityQuestion2" defaultValue={initialData.securityQuestion2 || "What is your mother's maiden name?"} className={styles.input} required />
-          </div>
-          <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
-            <label className={styles.label}>Answer 2 (Leave blank to keep existing)</label>
-            <input type="password" name="securityAnswer2" placeholder="Enter new answer to update" className={styles.input} />
-          </div>
-        </div>
       </div>
 
       <div className={styles.section}>

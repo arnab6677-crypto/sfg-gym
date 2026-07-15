@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { login, getSecurityQuestions, verifySecurityAnswers, resetPasswordWithSecurity } from './actions';
+import React, { useState } from 'react';
+import { login, sendOtp, verifyOtp, resetPassword } from './actions';
 import styles from './Login.module.css';
 
 export default function LoginPage() {
@@ -10,16 +10,11 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
 
-  // 'login' | 'forgot' | 'reset'
+  // 'login' | 'forgot' | 'verify' | 'reset'
   const [view, setView] = useState('login');
   
-  // Security Question States
-  const [question1, setQuestion1] = useState('');
-  const [question2, setQuestion2] = useState('');
-  const [answer1, setAnswer1] = useState('');
-  const [answer2, setAnswer2] = useState('');
-  
-  // Reset States
+  // Forgot Password States
+  const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -42,34 +37,33 @@ export default function LoginPage() {
     }
   };
 
-  const handleForgotPassword = async () => {
+  const handleSendOtp = async () => {
     setLoading(true);
     setError('');
     setSuccessMsg('');
-    const result = await getSecurityQuestions();
+    const result = await sendOtp();
     setLoading(false);
 
     if (result.success) {
-      setQuestion1(result.question1 || 'What city were you born in?');
-      setQuestion2(result.question2 || "What is your mother's maiden name?");
-      setView('forgot');
+      setSuccessMsg('OTP sent to sfg.silchar@gmail.com');
+      setView('verify');
     } else {
-      setError(result.error || 'Failed to fetch security questions');
+      setError(result.error || 'Failed to send OTP');
     }
   };
 
-  const handleVerifyAnswers = async (e: React.FormEvent) => {
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const result = await verifySecurityAnswers(answer1, answer2);
+    const result = await verifyOtp(otp);
     setLoading(false);
 
     if (result.success) {
-      setSuccessMsg('Security answers verified! Enter your new password.');
+      setSuccessMsg('OTP Verified! Enter your new password.');
       setView('reset');
     } else {
-      setError(result.error || 'Incorrect answers to security questions');
+      setError(result.error || 'Invalid or expired OTP');
     }
   };
 
@@ -86,15 +80,14 @@ export default function LoginPage() {
 
     setLoading(true);
     setError('');
-    const result = await resetPasswordWithSecurity(newPassword, answer1, answer2);
+    const result = await resetPassword(newPassword);
     setLoading(false);
 
     if (result.success) {
       setSuccessMsg('Password changed successfully! You can now login.');
       setView('login');
       setPassword('');
-      setAnswer1('');
-      setAnswer2('');
+      setOtp('');
       setNewPassword('');
       setConfirmPassword('');
     } else {
@@ -135,8 +128,8 @@ export default function LoginPage() {
               </button>
             </form>
             <div style={{ textAlign: 'center', marginTop: '16px' }}>
-              <button onClick={handleForgotPassword} disabled={loading} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '14px' }}>
-                {loading ? 'Loading...' : 'Forgot Password?'}
+              <button onClick={() => { setView('forgot'); setError(''); setSuccessMsg(''); }} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '14px' }}>
+                Forgot Password?
               </button>
             </div>
           </>
@@ -144,45 +137,55 @@ export default function LoginPage() {
 
         {view === 'forgot' && (
           <>
-            <h1 className={styles.title}>Security Verification</h1>
-            <p className={styles.subtitle}>Answer your security questions to reset your password</p>
+            <h1 className={styles.title}>Forgot Password</h1>
+            <p className={styles.subtitle}>We will send a 6-digit OTP to <b>sfg.silchar@gmail.com</b></p>
             
             {error && <div className={styles.error}>{error}</div>}
             
-            <form onSubmit={handleVerifyAnswers} className={styles.form}>
-              <div className={styles.inputGroup} style={{ marginBottom: '16px' }}>
-                <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '8px' }}>{question1}</p>
+            <div className={styles.form}>
+              <button onClick={handleSendOtp} disabled={loading} className={styles.button}>
+                {loading ? 'Sending Email...' : 'Send OTP via Email'}
+              </button>
+            </div>
+            
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+              <button onClick={() => setView('login')} style={{ background: 'none', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', fontSize: '14px' }}>
+                Back to Login
+              </button>
+            </div>
+          </>
+        )}
+
+        {view === 'verify' && (
+          <>
+            <h1 className={styles.title}>Verify OTP</h1>
+            <p className={styles.subtitle}>Check your email for the 6-digit code</p>
+            
+            {error && <div className={styles.error}>{error}</div>}
+            {successMsg && <div style={{ color: '#10B981', backgroundColor: '#ECFDF5', padding: '10px', borderRadius: '4px', fontSize: '13px', marginBottom: '16px', textAlign: 'center' }}>{successMsg}</div>}
+            
+            <form onSubmit={handleVerifyOtp} className={styles.form}>
+              <div className={styles.inputGroup}>
                 <input 
                   type="text" 
-                  placeholder="Your answer" 
-                  value={answer1}
-                  onChange={(e) => setAnswer1(e.target.value)}
+                  placeholder="Enter 6-digit OTP" 
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
                   className={styles.input}
+                  style={{ letterSpacing: '4px', textAlign: 'center' }}
                   required
                   autoFocus
+                  maxLength={6}
                 />
               </div>
-
-              <div className={styles.inputGroup} style={{ marginBottom: '24px' }}>
-                <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '8px' }}>{question2}</p>
-                <input 
-                  type="text" 
-                  placeholder="Your answer" 
-                  value={answer2}
-                  onChange={(e) => setAnswer2(e.target.value)}
-                  className={styles.input}
-                  required
-                />
-              </div>
-              
               <button type="submit" disabled={loading} className={styles.button}>
-                {loading ? 'Verifying...' : 'Verify Answers'}
+                {loading ? 'Verifying...' : 'Verify OTP'}
               </button>
             </form>
             
             <div style={{ textAlign: 'center', marginTop: '16px' }}>
               <button onClick={() => setView('login')} style={{ background: 'none', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', fontSize: '14px' }}>
-                Back to Login
+                Cancel
               </button>
             </div>
           </>
