@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { Lock, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import { RevenueChart, IncomeVsExpensesChart, ExpenseCategoriesChart } from '../DashboardCharts';
+import { getCustomReportData } from './actions';
 
 interface ReportsData {
   dailyCollection: number;
@@ -26,9 +27,81 @@ export default function ReportsClient({ data }: { data: ReportsData }) {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
 
-  const handleGenerate = () => {
-    // Generate report logic
-    alert('Report generation will be implemented soon!');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerate = async () => {
+    if (!startDate || !endDate) {
+      alert("Please select both a start date and an end date.");
+      return;
+    }
+
+    if (startDate > endDate) {
+      alert("Start date cannot be after the end date.");
+      return;
+    }
+
+    setIsGenerating(true);
+
+    try {
+      const data = await getCustomReportData(startDate.toISOString(), endDate.toISOString());
+      
+      if (!data.success) {
+        alert("Failed to generate report: " + data.error);
+        setIsGenerating(false);
+        return;
+      }
+
+      // Generate CSV
+      let csv = "Date,Type,Description,Category,Payment Method,Income Amount (Rs),Expense Amount (Rs)\n";
+      let totalIncome = 0;
+      let totalExpense = 0;
+
+      // Add Payments
+      if (data.payments) {
+        for (const p of data.payments) {
+          const dateStr = new Date(p.paymentDate).toLocaleDateString();
+          csv += `"${dateStr}","Income","Member Fee - ${p.member?.fullName || 'Unknown'} (Receipt: ${p.receiptNumber})","Membership","${p.paymentMethod}",${p.finalAmount},0\n`;
+          totalIncome += p.finalAmount;
+        }
+      }
+
+      // Add Store Sales
+      if (data.storeSales) {
+        for (const s of data.storeSales) {
+          const dateStr = new Date(s.date).toLocaleDateString();
+          csv += `"${dateStr}","Income","Store Sale - ${s.productName} (Qty: ${s.quantity})","${s.category}","-",${s.totalAmount},0\n`;
+          totalIncome += s.totalAmount;
+        }
+      }
+
+      // Add Expenses
+      if (data.expenses) {
+        for (const e of data.expenses) {
+          const dateStr = new Date(e.date).toLocaleDateString();
+          csv += `"${dateStr}","Expense","${e.title}${e.paidTo ? ' - Paid to: ' + e.paidTo : ''}","${e.category}","${e.paymentMethod}",0,${e.amount}\n`;
+          totalExpense += e.amount;
+        }
+      }
+
+      // Add Totals
+      csv += `\n"TOTALS","","","","",${totalIncome},${totalExpense}\n`;
+      csv += `"NET PROFIT","","","","",${totalIncome - totalExpense},""\n`;
+
+      // Trigger Download
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `SFG_Report_${startDate.toISOString().split('T')[0]}_to_${endDate.toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+    } catch (error: any) {
+      alert("Error generating report: " + error.message);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -157,7 +230,9 @@ export default function ReportsClient({ data }: { data: ReportsData }) {
             <label style={{ fontSize: '14px', fontWeight: 500 }}>End Date</label>
             <CustomDatePicker selected={endDate} onChange={setEndDate} />
           </div>
-          <Button variant="primary" onClick={handleGenerate}>Generate</Button>
+          <Button variant="primary" onClick={handleGenerate} disabled={isGenerating}>
+            {isGenerating ? 'Generating...' : 'Generate Report (CSV)'}
+          </Button>
         </div>
       </Card>
     </div>
