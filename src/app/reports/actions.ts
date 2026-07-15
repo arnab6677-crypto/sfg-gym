@@ -127,3 +127,51 @@ export async function resetReportsPassword(newPassword: string) {
     return { success: false, error: 'Failed to reset reports password' };
   }
 }
+
+export async function getCustomReportData(startDateStr: string, endDateStr: string) {
+  try {
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+    
+    // Set endDate to the very end of the day to include all transactions on that day
+    endDate.setHours(23, 59, 59, 999);
+
+    const payments = await prisma.payment.findMany({
+      where: {
+        paymentDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        member: true,
+      },
+      orderBy: { paymentDate: 'asc' },
+    });
+
+    const expenses = await prisma.expense.findMany({
+      where: {
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    const storeSales = await prisma.storeSale.findMany({
+      where: {
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    return { success: true, payments, expenses, storeSales };
+  } catch (error: any) {
+    console.error("Error generating report data:", error);
+    return { success: false, error: error.message };
+  }
+}
