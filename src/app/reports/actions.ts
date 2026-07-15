@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import nodemailer from 'nodemailer';
 
 export async function loginToReports(formData: FormData) {
@@ -115,6 +116,10 @@ export async function resetReportsPassword(newPassword: string) {
         reportsResetOtpExpiry: null
       }
     });
+
+    revalidatePath('/');
+    revalidatePath('/reports');
+    revalidatePath('/reports/login');
 
     return { success: true };
   } catch (error) {
