@@ -67,8 +67,6 @@ export default function SettingsForm({ initialData }: { initialData: SettingsDat
         </div>
       </div>
 
-      </div>
-
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Database (Advanced)</h3>
         <div className={styles.grid}>
