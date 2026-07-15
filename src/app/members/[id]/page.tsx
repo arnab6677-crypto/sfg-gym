@@ -26,7 +26,13 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
   }
 
   const latestPayment = member.payments[0];
-  const isOverdue = latestPayment && new Date(latestPayment.nextDueDate) < new Date();
+  const isOverdue = latestPayment && (() => {
+    const d = new Date(latestPayment.nextDueDate);
+    d.setHours(0,0,0,0);
+    const t = new Date();
+    t.setHours(0,0,0,0);
+    return d < t;
+  })();
 
   return (
     <div className={styles.container}>

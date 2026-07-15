@@ -5,7 +5,12 @@ import styles from '../members/Members.module.css';
 export default async function DueFeesPage() {
   // Find members whose latest payment has a nextDueDate < today
   const members = await prisma.member.findMany({
-    where: { status: 'ACTIVE' },
+    where: { 
+      status: 'ACTIVE',
+      membershipType: {
+        not: 'Daily Pass'
+      }
+    },
     include: {
       payments: {
         orderBy: { nextDueDate: 'desc' },

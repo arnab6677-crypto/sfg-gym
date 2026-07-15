@@ -61,7 +61,13 @@ export default function MembersClient({ initialMembers, initialSearch = '' }: { 
           <tbody>
             {filteredMembers.map((member) => {
               const latestPayment = member.payments[0];
-              const isOverdue = latestPayment && new Date(latestPayment.nextDueDate) < new Date();
+              const isOverdue = latestPayment && (() => {
+                const d = new Date(latestPayment.nextDueDate);
+                d.setHours(0,0,0,0);
+                const t = new Date();
+                t.setHours(0,0,0,0);
+                return d < t;
+              })();
               const isDailyPass = member.membershipType === 'Daily Pass';
               const statusLabel = isOverdue ? (isDailyPass ? 'INACTIVE' : 'OVERDUE') : 'ACTIVE';
               
