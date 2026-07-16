@@ -114,12 +114,19 @@ export default function DueFeesClient({ initialMembers, initialUpcoming = [] }: 
                     
                     {(() => {
                       const phone = (member.phone || '').replace(/\D/g, '');
+                      const getDisplayPlanName = (name: string) => {
+                        if (!name) return 'Membership';
+                        if (name.includes('Monthly')) return 'Monthly Membership';
+                        return name;
+                      };
+                      const planName = getDisplayPlanName(member.membershipType);
+
                       let message = '';
                       if (activeTab === 'overdue') {
-                        message = `Hi ${member.fullName},\n\nThis is a gentle reminder from STRENGTH FUSION GYM that your membership fee is currently overdue.\n\nPlease clear your pending dues at the earliest to continue your fitness journey uninterrupted! 💪\n\nThank you!`;
+                        message = `Hi ${member.fullName},\n\nThis is a gentle reminder from STRENGTH FUSION GYM that your ${planName} fee is currently overdue.\n\nPlease clear your pending dues at the earliest to continue your fitness journey uninterrupted! 💪\n\nThank you!`;
                       } else {
                         const dayText = member.daysUntilDue === 0 ? 'today' : `in ${member.daysUntilDue} days`;
-                        message = `Hi ${member.fullName},\n\nThis is a gentle reminder from STRENGTH FUSION GYM that your membership fee will be due ${dayText}.\n\nPlease renew soon to continue your fitness journey uninterrupted! 💪\n\nThank you!`;
+                        message = `Hi ${member.fullName},\n\nThis is a gentle reminder from STRENGTH FUSION GYM that your ${planName} fee will be due ${dayText}.\n\nPlease renew soon to continue your fitness journey uninterrupted! 💪\n\nThank you!`;
                       }
                       
                       const waUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;

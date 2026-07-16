@@ -132,7 +132,14 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
       // WhatsApp Integration
       const phoneRaw = selectedMember?.phone || '';
       const phone = phoneRaw.replace(/\D/g, '');
-      const message = `Hi ${selectedMember?.fullName},\n\nYour fee payment at STRENGTH FUSION GYM was successful! 💪\n\nAmount Paid: ₹${finalAmount}\nMembership: ${selectedPlan?.name}\nReceipt: ${result.receiptNumber || 'N/A'}\n\n📄 *View and download your official digital receipt:* \nhttps://sfg-gym-website.vercel.app/receipt/${result.receiptNumber}\n\nThank you for choosing SFG!`;
+      const getDisplayPlanName = (name: string | undefined) => {
+        if (!name) return 'Membership';
+        if (name.includes('Monthly')) return 'Monthly Membership';
+        return name;
+      };
+      const planName = getDisplayPlanName(selectedPlan?.name);
+
+      const message = `Hi ${selectedMember?.fullName},\n\nYour fee payment at STRENGTH FUSION GYM was successful! 💪\n\nAmount Paid: ₹${finalAmount}\nMembership: ${planName}\nReceipt: ${result.receiptNumber || 'N/A'}\n\n📄 *View and download your official digital receipt:* \nhttps://sfg-gym-website.vercel.app/receipt/${result.receiptNumber}\n\nThank you for choosing SFG!`;
       
       const waUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
       

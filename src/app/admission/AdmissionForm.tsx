@@ -122,6 +122,14 @@ export default function AdmissionForm({ plans, defaultAdmissionFee, trainers, pt
       const selectedPlan = plans.find(p => p.id === planId);
       const phoneRaw = formData.get('phone') as string;
       const phone = phoneRaw.replace(/\D/g, '');
+      
+      const getDisplayPlanName = (name: string | undefined) => {
+        if (!name) return 'Membership';
+        if (name.includes('Monthly')) return 'Monthly Membership';
+        return name;
+      };
+      const planName = getDisplayPlanName(selectedPlan?.name);
+
       const message = `🏋️‍♂️ Welcome to STRENGTH FUSION GYM (SFG)! 💙
 
 Hello ${formData.get('fullName')},
@@ -130,7 +138,7 @@ Welcome to the Strength Fusion Gym (SFG) Family! 💪
 
 Your admission is successful!
 *Member ID:* ${result.regNumber}
-*Membership:* ${selectedPlan?.name}
+*Membership:* ${planName}
 *Amount Paid:* ₹${finalAmount}
 *Receipt No:* ${result.receiptNumber || 'N/A'}
 

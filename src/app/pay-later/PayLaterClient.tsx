@@ -65,11 +65,18 @@ export default function PayLaterClient({ initialPayments }: { initialPayments: a
         <tbody>
           {filteredPayments.map((payment) => {
             const phone = (payment.member.phone || '').replace(/\D/g, '');
-            let message = `Hi ${payment.member.fullName},\n\nThis is a gentle reminder from STRENGTH FUSION GYM that your pending balance of ₹${payment.balanceDue} is due.`;
+            const getDisplayPlanName = (name: string) => {
+              if (!name) return 'Membership';
+              if (name.includes('Monthly')) return 'Monthly Membership';
+              return name;
+            };
+            const planName = getDisplayPlanName(payment.plan.name);
+
+            let message = `Hi ${payment.member.fullName},\n\nThis is a gentle reminder from STRENGTH FUSION GYM that your pending balance of ₹${payment.balanceDue} for your ${planName} is due.`;
             
             if (payment.promisedDate) {
               const pDate = new Date(payment.promisedDate);
-              message = `Hi ${payment.member.fullName},\n\nThis is a gentle reminder from STRENGTH FUSION GYM that your pending balance of ₹${payment.balanceDue} is due on ${formatDate(pDate)} as promised.`;
+              message = `Hi ${payment.member.fullName},\n\nThis is a gentle reminder from STRENGTH FUSION GYM that your pending balance of ₹${payment.balanceDue} for your ${planName} is due on ${formatDate(pDate)} as promised.`;
             }
             
             message += `\n\nPlease clear it at the earliest! 💪\n\nThank you!`;
