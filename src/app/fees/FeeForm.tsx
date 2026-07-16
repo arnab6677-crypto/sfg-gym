@@ -30,6 +30,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
   
   const [planId, setPlanId] = useState(plans[0]?.id || '');
   const [amount, setAmount] = useState<number | string>('');
+  const [admissionFee, setAdmissionFee] = useState<number | string>('0');
   const [discount, setDiscount] = useState<number | string>('');
   const [amountPaid, setAmountPaid] = useState<number | string>('');
   const [promisedDate, setPromisedDate] = useState<Date | null>(null);
@@ -52,7 +53,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
   
   // Payment calculations
   // ptFee is manually entered since ptPlans are dynamic strings
-  const finalAmount = (Number(amount) || 0) + (Number(ptFee) || 0) - (Number(discount) || 0);
+  const finalAmount = (Number(amount) || 0) + (Number(admissionFee) || 0) + (Number(ptFee) || 0) - (Number(discount) || 0);
 
   // Sync amountPaid to finalAmount by default
   useEffect(() => {
@@ -68,11 +69,17 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
         if (monthlyPlan) {
           setPlanId(monthlyPlan.id);
           setAmount(selectedMember.monthlyFeeAmount || monthlyPlan.price);
+          if (selectedMember.membershipType === 'Admission + Monthly Membership' && !selectedMember.admissionFeePaid) {
+            setAdmissionFee('2000');
+          } else {
+            setAdmissionFee('0');
+          }
         }
       } else {
         const defaultPlan = plans[0];
         setPlanId(defaultPlan?.id || '');
         setAmount(defaultPlan?.price || 0);
+        setAdmissionFee('0');
       }
     }
   }, [selectedMember, plans]);
@@ -83,6 +90,12 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
     const selectedPlan = plans.find(p => p.id === selectedId);
     if (selectedPlan) {
       setAmount(selectedPlan.price);
+      if (selectedPlan.name === 'Admission + Monthly Membership') {
+        setAmount(800);
+        setAdmissionFee(2000);
+      } else {
+        setAdmissionFee(0);
+      }
     }
   };
 
@@ -99,6 +112,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
     const formData = new FormData(e.currentTarget);
     formData.append('memberId', memberId);
     if (!formData.has('amount')) formData.append('amount', (Number(amount) || 0).toString());
+    if (!formData.has('admissionFee')) formData.append('admissionFee', (Number(admissionFee) || 0).toString());
     formData.append('finalAmount', finalAmount.toString());
     
     // Add amount paid
@@ -200,12 +214,16 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
           <div className={styles.inputGroup}>
             <label className={styles.label}>Membership Plan *</label>
             <select name="planId" value={planId} onChange={handlePlanChange} className={styles.select} required>
-              {plans.map(plan => (
-                <option key={plan.id} value={plan.id}>{plan.name} (₹{plan.price})</option>
-              ))}
+              {plans.map(plan => {
+                const displayPrice = plan.name === 'Admission + Monthly Membership' ? 2800 : plan.price;
+                return <option key={plan.id} value={plan.id}>{plan.name} (₹{displayPrice})</option>
+              })}
             </select>
           </div>
           <Input label="Package Amount (₹)" type="number" name="amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          {Number(admissionFee) > 0 && (
+            <Input label="Admission Fee (₹)" type="number" name="admissionFee" value={admissionFee} onChange={(e) => setAdmissionFee(e.target.value)} />
+          )}
           <Input label="Discount (₹)" type="number" name="discount" value={discount} onChange={(e) => setDiscount(e.target.value)} />
           <Input label="Final Amount (₹)" type="number" value={finalAmount} readOnly className={styles.highlightInput} />
           

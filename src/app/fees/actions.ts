@@ -8,6 +8,7 @@ export async function collectFee(formData: FormData) {
     const memberId = formData.get('memberId') as string;
     const planId = formData.get('planId') as string;
     const amount = parseFloat(formData.get('amount') as string) || 0;
+    const admissionFee = parseFloat(formData.get('admissionFee') as string) || 0;
     const discount = parseFloat(formData.get('discount') as string) || 0;
     const finalAmount = parseFloat(formData.get('finalAmount') as string) || 0;
     const amountPaid = parseFloat(formData.get('amountPaid') as string) || finalAmount;
@@ -64,6 +65,7 @@ export async function collectFee(formData: FormData) {
           memberId,
           planId,
           amount,
+          admissionFee,
           discount,
           ptFee,
           ptPlan: ptPlan === 'None' ? null : ptPlan,
@@ -83,6 +85,7 @@ export async function collectFee(formData: FormData) {
         data: {
           membershipType: plan.name,
           monthlyFeeAmount: amount,
+          ...(admissionFee > 0 && { admissionFeePaid: true }),
           ptPlan: ptPlan === 'None' ? null : ptPlan,
           assignedTrainer: ptPlan === 'None' ? null : assignedTrainer,
           nextDueDate,

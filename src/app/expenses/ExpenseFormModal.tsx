@@ -19,6 +19,7 @@ export const CATEGORIES = [
   "Equipment", 
   "Supplies",
   "Marketing",
+  "Drinks",
   "Other"
 ];
 
