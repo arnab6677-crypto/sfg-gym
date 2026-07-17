@@ -20,6 +20,7 @@ interface Member {
   nextDueDate?: Date | null;
   ptPlan?: string | null;
   assignedTrainer?: string | null;
+  admissionFeePaid?: boolean;
   payments: { paymentDate: Date }[];
 }
 
