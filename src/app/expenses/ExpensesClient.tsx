@@ -4,12 +4,12 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Plus, Search, Edit2, Trash2, Download, FileText } from 'lucide-react';
-import ExpenseFormModal, { CATEGORIES } from './ExpenseFormModal';
+import ExpenseFormModal from './ExpenseFormModal';
 import { deleteExpense } from './actions';
 import { formatDate } from '@/lib/formatDate';
 import styles from '../admission/Admission.module.css';
 
-export default function ExpensesClient({ expenses }: { expenses: any[] }) {
+export default function ExpensesClient({ expenses, categories }: { expenses: any[], categories: string[] }) {
   const [showModal, setShowModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   
@@ -130,7 +130,7 @@ export default function ExpensesClient({ expenses }: { expenses: any[] }) {
             style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-secondary)', outline: 'none' }}
           >
             <option value="">All Categories</option>
-            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
 
           <input 
@@ -213,6 +213,7 @@ export default function ExpensesClient({ expenses }: { expenses: any[] }) {
         <ExpenseFormModal 
           onClose={() => setShowModal(false)} 
           expenseToEdit={editingExpense} 
+          categories={categories}
         />
       )}
 

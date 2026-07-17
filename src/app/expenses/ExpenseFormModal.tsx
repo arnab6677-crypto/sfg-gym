@@ -9,19 +9,10 @@ import { X } from 'lucide-react';
 interface ExpenseFormModalProps {
   onClose: () => void;
   expenseToEdit?: any; // If editing
+  categories: string[];
 }
 
-export const CATEGORIES = [
-  "Rent", 
-  "Utilities", 
-  "Salary", 
-  "Maintenance", 
-  "Equipment", 
-  "Supplies",
-  "Marketing",
-  "Drinks",
-  "Other"
-];
+
 
 export const PAYMENT_METHODS = [
   "CASH",
@@ -30,7 +21,7 @@ export const PAYMENT_METHODS = [
   "CARD"
 ];
 
-export default function ExpenseFormModal({ onClose, expenseToEdit }: ExpenseFormModalProps) {
+export default function ExpenseFormModal({ onClose, expenseToEdit, categories }: ExpenseFormModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -85,7 +76,7 @@ export default function ExpenseFormModal({ onClose, expenseToEdit }: ExpenseForm
               <label style={labelStyle}>Category *</label>
               <select name="category" required defaultValue={isEdit ? expenseToEdit.category : ''} style={inputStyle}>
                 <option value="" disabled>Select Category</option>
-                {CATEGORIES.map(cat => (
+                {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>

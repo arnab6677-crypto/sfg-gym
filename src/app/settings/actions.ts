@@ -12,6 +12,7 @@ export async function updateSettings(formData: FormData) {
     const adminEmail = formData.get('adminEmail') as string;
     const trainers = formData.get('trainers') as string;
     const ptPlans = formData.get('ptPlans') as string;
+    const expenseCategories = formData.get('expenseCategories') as string;
 
     const currentSettings = await prisma.settings.findFirst();
     if (!currentSettings) throw new Error("Settings not found");
@@ -24,6 +25,7 @@ export async function updateSettings(formData: FormData) {
         adminEmail,
         trainers,
         ptPlans,
+        expenseCategories,
         ...(adminPassword && adminPassword.length > 0 ? { adminPassword } : {})
       }
     });

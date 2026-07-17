@@ -85,8 +85,9 @@ model Settings {
   admissionFee  Float    @default(500)
   adminPassword String   @default("123456")
   adminEmail    String   @default("admin@example.com")
-  trainers      String   @default("Sayon,Uday,Siddhart")
+  trainers          String   @default("Sayon,Uday,Siddhart")
   ptPlans           String   @default("None,Only Training,Only Diet,Full Coaching")
+  expenseCategories String   @default("Rent,Utilities,Salary,Maintenance,Equipment,Supplies,Marketing,Drinks,Other")
   resetOtp          String?
   resetOtpExpiry    DateTime?
   reportsPassword   String   @default("admin123")

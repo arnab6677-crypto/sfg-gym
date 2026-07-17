@@ -12,6 +12,7 @@ interface SettingsData {
   adminEmail: string;
   trainers: string;
   ptPlans: string;
+  expenseCategories: string;
 }
 
 export default function SettingsForm({ initialData }: { initialData: SettingsData }) {
@@ -63,6 +64,11 @@ export default function SettingsForm({ initialData }: { initialData: SettingsDat
             <label className={styles.label}>PT Plans (Comma Separated)</label>
             <input type="text" name="ptPlans" defaultValue={initialData.ptPlans} className={styles.input} />
             <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>e.g. None, Only Training, Only Diet, Full Coaching</p>
+          </div>
+          <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
+            <label className={styles.label}>Expense Categories (Comma Separated)</label>
+            <input type="text" name="expenseCategories" defaultValue={initialData.expenseCategories} className={styles.input} />
+            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>e.g. Rent, Utilities, Salary, Equipment, Drinks</p>
           </div>
         </div>
       </div>

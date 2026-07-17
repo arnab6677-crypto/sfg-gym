@@ -6,9 +6,14 @@ export const metadata = {
 };
 
 export default async function ExpensesPage() {
-  const expenses = await prisma.expense.findMany({
-    orderBy: { date: 'desc' }
-  });
+  const [expenses, settings] = await Promise.all([
+    prisma.expense.findMany({ orderBy: { date: 'desc' } }),
+    prisma.settings.findFirst()
+  ]);
 
-  return <ExpensesClient expenses={expenses} />;
+  const categories = settings?.expenseCategories?.split(',').map((c: string) => c.trim()).filter(Boolean) || [
+    "Rent", "Utilities", "Salary", "Maintenance", "Equipment", "Supplies", "Marketing", "Drinks", "Other"
+  ];
+
+  return <ExpensesClient expenses={expenses} categories={categories} />;
 }
