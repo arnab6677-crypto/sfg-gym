@@ -7,15 +7,18 @@ import { Input } from '@/components/ui/Input';
 import { addProduct, deleteProduct, recordSale } from './actions';
 import { ShoppingCart, Plus, Trash2, Package } from 'lucide-react';
 import styles from '../members/Members.module.css'; // Reusing table styles
+import { useRouter } from 'next/navigation';
 
 export default function StoreClient({ products, sales }: { products: any[], sales: any[] }) {
   const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   async function handleAddProduct(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsPending(true);
     await addProduct(new FormData(e.currentTarget));
     e.currentTarget.reset();
+    router.refresh();
     setIsPending(false);
   }
 
@@ -24,6 +27,7 @@ export default function StoreClient({ products, sales }: { products: any[], sale
     setIsPending(true);
     await recordSale(new FormData(e.currentTarget));
     e.currentTarget.reset();
+    router.refresh();
     setIsPending(false);
   }
 
@@ -31,6 +35,7 @@ export default function StoreClient({ products, sales }: { products: any[], sale
     if (confirm('Delete this product?')) {
       setIsPending(true);
       await deleteProduct(id);
+      router.refresh();
       setIsPending(false);
     }
   }
