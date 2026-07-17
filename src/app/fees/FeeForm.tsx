@@ -29,6 +29,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
   const [error, setError] = useState('');
   
   const [planId, setPlanId] = useState(plans[0]?.id || '');
+  const [quantity, setQuantity] = useState<number | string>(1);
   const [amount, setAmount] = useState<number | string>('');
   const [admissionFee, setAdmissionFee] = useState<number | string>('0');
   const [discount, setDiscount] = useState<number | string>('');
@@ -64,11 +65,12 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
 
   useEffect(() => {
     if (selectedMember) {
+      const q = Number(quantity) || 1;
       if (selectedMember.membershipType === 'Admission + Monthly Membership' || selectedMember.membershipType === 'Monthly Membership (Without Admission)') {
         const monthlyPlan = plans.find(p => p.name === selectedMember.membershipType);
         if (monthlyPlan) {
           setPlanId(monthlyPlan.id);
-          setAmount(selectedMember.monthlyFeeAmount || monthlyPlan.price);
+          setAmount((selectedMember.monthlyFeeAmount || monthlyPlan.price) * q);
           if (selectedMember.membershipType === 'Admission + Monthly Membership' && !selectedMember.admissionFeePaid) {
             setAdmissionFee('2000');
           } else {
@@ -78,7 +80,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
       } else {
         const defaultPlan = plans[0];
         setPlanId(defaultPlan?.id || '');
-        setAmount(defaultPlan?.price || 0);
+        setAmount((defaultPlan?.price || 0) * q);
         setAdmissionFee('0');
       }
     }
@@ -88,12 +90,13 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
     const selectedId = e.target.value;
     setPlanId(selectedId);
     const selectedPlan = plans.find(p => p.id === selectedId);
+    const q = Number(quantity) || 1;
     if (selectedPlan) {
-      setAmount(selectedPlan.price);
       if (selectedPlan.name === 'Admission + Monthly Membership') {
-        setAmount(800);
+        setAmount(800 * q);
         setAdmissionFee(2000);
       } else {
+        setAmount(selectedPlan.price * q);
         setAdmissionFee(0);
       }
     }
@@ -111,6 +114,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
 
     const formData = new FormData(e.currentTarget);
     formData.append('memberId', memberId);
+    formData.append('quantity', (Number(quantity) || 1).toString());
     if (!formData.has('amount')) formData.append('amount', (Number(amount) || 0).toString());
     if (!formData.has('admissionFee')) formData.append('admissionFee', (Number(admissionFee) || 0).toString());
     formData.append('finalAmount', finalAmount.toString());
@@ -226,6 +230,25 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
                 return <option key={plan.id} value={plan.id}>{plan.name} (₹{displayPrice})</option>
               })}
             </select>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Duration (Months/Cycles)</label>
+            <input 
+              type="number" 
+              name="quantityDummy" 
+              min="1"
+              value={quantity} 
+              onChange={(e) => {
+                const qStr = e.target.value;
+                setQuantity(qStr);
+                const q = parseInt(qStr) || 1;
+                const selectedPlan = plans.find(p => p.id === planId);
+                if (selectedPlan) {
+                  const basePrice = selectedPlan.name === 'Admission + Monthly Membership' ? 800 : selectedPlan.price;
+                  setAmount(basePrice * q);
+                }
+              }} 
+              style={{ width: '100%', padding: '10px 16px', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-main)' }}
+            />
           </div>
           <Input label="Package Amount (₹)" type="number" name="amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
           {Number(admissionFee) > 0 && (

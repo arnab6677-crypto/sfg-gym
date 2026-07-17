@@ -7,6 +7,7 @@ export async function collectFee(formData: FormData) {
   try {
     const memberId = formData.get('memberId') as string;
     const planId = formData.get('planId') as string;
+    const quantity = parseInt(formData.get('quantity') as string) || 1;
     const amount = parseFloat(formData.get('amount') as string) || 0;
     const admissionFee = parseFloat(formData.get('admissionFee') as string) || 0;
     const discount = parseFloat(formData.get('discount') as string) || 0;
@@ -57,7 +58,7 @@ export async function collectFee(formData: FormData) {
     }
 
     const nextDueDate = new Date(baseDate);
-    nextDueDate.setDate(nextDueDate.getDate() + plan.durationDays);
+    nextDueDate.setDate(nextDueDate.getDate() + (plan.durationDays * quantity));
 
     const result = await prisma.$transaction(async (tx) => {
       const payment = await tx.payment.create({
