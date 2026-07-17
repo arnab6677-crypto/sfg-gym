@@ -29,13 +29,19 @@ export default async function Dashboard() {
     }
   });
 
-  // Calculate Due Fees Total
-  const pastPayments = await prisma.payment.findMany({
-    where: { nextDueDate: { lt: today } },
-    include: { plan: true }
+  // Calculate Due Fees Total (Sum of monthly fees for active overdue members)
+  const overdueMembers = await prisma.member.findMany({
+    where: { 
+      status: 'ACTIVE',
+      membershipType: { not: 'Daily Pass' },
+      OR: [
+        { nextDueDate: { lt: today } },
+        { nextDueDate: null }
+      ]
+    }
   });
   
-  const feesDue = pastPayments.reduce((acc, p) => acc + (p.plan?.price || 0), 0);
+  const feesDue = overdueMembers.reduce((acc, m) => acc + (m.monthlyFeeAmount || 0), 0);
 
   const stats = [
     { label: "Total Members", value: totalMembers.toString(), icon: Users, color: "#3B82F6" },
