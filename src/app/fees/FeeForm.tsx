@@ -230,6 +230,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
                 return <option key={plan.id} value={plan.id}>{plan.name} (₹{displayPrice})</option>
               })}
             </select>
+          </div>
           <div className={styles.inputGroup}>
             <label className={styles.label}>Duration (Months/Cycles)</label>
             <input 
