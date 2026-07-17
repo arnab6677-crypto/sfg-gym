@@ -49,3 +49,31 @@ export async function recordSale(formData: FormData) {
 
   revalidatePath('/store');
 }
+
+export async function recordInventoryPurchase(formData: FormData) {
+  const description = formData.get('description') as string;
+  const category = formData.get('category') as string;
+  const amount = parseFloat(formData.get('amount') as string);
+
+  await prisma.expense.create({
+    data: {
+      title: `Store Restock: ${description}`,
+      amount,
+      category,
+      paidTo: "Store Vendor",
+      paymentMethod: "CASH",
+    },
+  });
+
+  revalidatePath('/store');
+  revalidatePath('/expenses');
+  revalidatePath('/reports');
+}
+
+export async function deleteStoreSale(saleId: string) {
+  await prisma.storeSale.delete({
+    where: { id: saleId },
+  });
+
+  revalidatePath('/store');
+}

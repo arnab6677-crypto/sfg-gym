@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { addProduct, deleteProduct, recordSale } from './actions';
-import { ShoppingCart, Plus, Trash2, Package } from 'lucide-react';
+import { addProduct, deleteProduct, recordSale, recordInventoryPurchase, deleteStoreSale } from './actions';
+import { ShoppingCart, Plus, Trash2, Package, TrendingDown } from 'lucide-react';
 import styles from '../members/Members.module.css'; // Reusing table styles
 import { useRouter } from 'next/navigation';
 
@@ -31,10 +31,28 @@ export default function StoreClient({ products, sales }: { products: any[], sale
     setIsPending(false);
   }
 
+  async function handleRecordInventoryPurchase(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsPending(true);
+    await recordInventoryPurchase(new FormData(e.currentTarget));
+    e.currentTarget.reset();
+    router.refresh();
+    setIsPending(false);
+  }
+
   async function handleDeleteProduct(id: string) {
     if (confirm('Delete this product?')) {
       setIsPending(true);
       await deleteProduct(id);
+      router.refresh();
+      setIsPending(false);
+    }
+  }
+
+  async function handleDeleteStoreSale(id: string) {
+    if (confirm('Delete this recorded sale? This action cannot be undone.')) {
+      setIsPending(true);
+      await deleteStoreSale(id);
       router.refresh();
       setIsPending(false);
     }
@@ -139,6 +157,45 @@ export default function StoreClient({ products, sales }: { products: any[], sale
         </div>
       </Card>
 
+      {/* Record Inventory Purchase Section */}
+      <Card padding="lg" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div>
+          <h2 style={{ fontSize: '20px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <TrendingDown size={24} color="#F59E0B" />
+            Restock Inventory (Expense)
+          </h2>
+          <p style={{ color: 'var(--color-text-secondary)', marginTop: '4px' }}>Log a stock purchase. This links directly to the Expenses module.</p>
+        </div>
+        
+        <form onSubmit={handleRecordInventoryPurchase} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '14px', fontWeight: 500 }}>Description</label>
+            <Input placeholder="e.g. 2 Crates of Monster" name="description" required />
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '14px', fontWeight: 500 }}>Category</label>
+              <select name="category" required style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-main)', color: 'var(--color-text-main)' }}>
+                <option value="Drinks">Drinks</option>
+                <option value="Supplies">Supplies</option>
+                <option value="Equipment">Equipment</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '14px', fontWeight: 500 }}>Total Cost (₹)</label>
+              <Input type="number" name="amount" required min="0" />
+            </div>
+          </div>
+          
+          <Button type="submit" variant="primary" disabled={isPending} style={{ width: '100%', marginTop: '8px' }}>
+            <TrendingDown size={18} /> Record Expense
+          </Button>
+        </form>
+      </Card>
+
       {/* Sales History Table (Full Width) */}
       <Card padding="lg" style={{ gridColumn: '1 / -1' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px' }}>Recent Sales History</h2>
@@ -151,11 +208,12 @@ export default function StoreClient({ products, sales }: { products: any[], sale
                 <th>Category</th>
                 <th>Quantity</th>
                 <th>Total Amount</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {sales.length === 0 ? (
-                <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--color-text-secondary)' }}>No sales recorded yet</td></tr>
+                <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--color-text-secondary)' }}>No sales recorded yet</td></tr>
               ) : sales.map(s => (
                 <tr key={s.id}>
                   <td>{new Date(s.date).toLocaleDateString()} {new Date(s.date).toLocaleTimeString()}</td>
@@ -163,6 +221,11 @@ export default function StoreClient({ products, sales }: { products: any[], sale
                   <td>{s.category === 'ENERGY_DRINK' ? 'Energy Drink' : 'Supplement'}</td>
                   <td>{s.quantity}</td>
                   <td style={{ fontWeight: 600, color: '#10B981' }}>₹{s.totalAmount}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <button onClick={() => handleDeleteStoreSale(s.id)} disabled={isPending} style={{ color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer' }}>
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
