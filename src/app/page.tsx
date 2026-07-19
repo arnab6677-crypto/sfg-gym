@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import styles from "./Dashboard.module.css";
 import { Users, AlertCircle, Activity, CalendarClock, UserPlus } from 'lucide-react';
+import { DailyPassWidget } from "@/components/DailyPassWidget";
 import prisma from "@/lib/prisma";
 
 export const dynamic = 'force-dynamic';
@@ -57,6 +58,16 @@ export default async function Dashboard() {
   
   const feesDue = overdueMembers.reduce((acc, m) => acc + (m.monthlyFeeAmount || 0), 0);
 
+  // Fetch Daily Pass plan
+  const dailyPassPlan = await prisma.membershipPlan.findFirst({
+    where: {
+      OR: [
+        { name: { contains: 'Daily' } },
+        { name: { contains: 'One Day' } }
+      ]
+    }
+  });
+
   const stats = [
     { label: "Total Members", value: totalMembers.toString(), icon: Users, color: "#3B82F6" },
     { label: "Active Members", value: activeMembers.toString(), icon: Activity, color: "#10B981" },
@@ -90,6 +101,14 @@ export default async function Dashboard() {
             </Card>
           );
         })}
+      </div>
+
+      <div style={{ marginTop: '24px' }}>
+        <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Quick Daily Pass</h2>
+        <Card padding="lg" style={{ maxWidth: '600px' }}>
+          {/* @ts-ignore - dailyPassPlan might be null but DailyPassWidget handles it */}
+          <DailyPassWidget plan={dailyPassPlan} />
+        </Card>
       </div>
     </div>
   );

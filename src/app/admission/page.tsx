@@ -3,9 +3,11 @@ import AdmissionForm from './AdmissionForm';
 import { Card } from '@/components/ui/Card';
 
 export default async function AdmissionPage() {
-  const plans = await prisma.membershipPlan.findMany({
+  const allPlans = await prisma.membershipPlan.findMany({
     orderBy: { durationDays: 'asc' }
   });
+  
+  const plans = allPlans.filter(p => !p.name.toLowerCase().includes('daily') && !p.name.toLowerCase().includes('one day'));
   
   const settings = await prisma.settings.findFirst();
   const admissionFee = settings?.admissionFee || 500;
