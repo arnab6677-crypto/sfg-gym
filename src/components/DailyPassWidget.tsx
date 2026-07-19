@@ -120,7 +120,7 @@ export function DailyPassWidget({ dailyPassPlan, weeklyPassPlan }: { dailyPassPl
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required 
-            placeholder="e.g. John Doe"
+            placeholder="e.g. Arnab Kar"
           />
         </div>
         <div style={{ flex: 1 }}>
