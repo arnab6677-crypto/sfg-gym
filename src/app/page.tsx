@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/Card";
 import styles from "./Dashboard.module.css";
 import { Users, AlertCircle, Activity, CalendarClock, UserPlus } from 'lucide-react';
 import { DailyPassWidget } from "@/components/DailyPassWidget";
+import { ExpiredPassesAlert } from "@/components/ExpiredPassesAlert";
 import prisma from "@/lib/prisma";
 
 export const dynamic = 'force-dynamic';
@@ -88,6 +89,23 @@ export default async function Dashboard() {
     });
   }
 
+  // Expired Short-Term Passes
+  const expiredShortTermPasses = await prisma.member.findMany({
+    where: {
+      status: 'ACTIVE',
+      membershipType: { in: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] },
+      nextDueDate: { lt: today }
+    },
+    orderBy: { nextDueDate: 'desc' },
+    select: {
+      id: true,
+      fullName: true,
+      phone: true,
+      membershipType: true,
+      nextDueDate: true
+    }
+  });
+
   const stats = [
     { label: "Total Members", value: totalMembers.toString(), icon: Users, color: "#3B82F6" },
     { label: "Active Members", value: activeMembers.toString(), icon: Activity, color: "#10B981" },
@@ -122,6 +140,8 @@ export default async function Dashboard() {
           );
         })}
       </div>
+
+      <ExpiredPassesAlert passes={expiredShortTermPasses} />
 
       <div style={{ marginTop: '24px' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Quick Short-Term Pass</h2>
