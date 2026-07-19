@@ -58,8 +58,8 @@ export default async function Dashboard() {
   
   const feesDue = overdueMembers.reduce((acc, m) => acc + (m.monthlyFeeAmount || 0), 0);
 
-  // Fetch Daily Pass plan
-  const dailyPassPlan = await prisma.membershipPlan.findFirst({
+  // Fetch or create Daily Pass plan
+  let dailyPassPlan = await prisma.membershipPlan.findFirst({
     where: {
       OR: [
         { name: { contains: 'Daily' } },
@@ -67,6 +67,26 @@ export default async function Dashboard() {
       ]
     }
   });
+  if (!dailyPassPlan) {
+    dailyPassPlan = await prisma.membershipPlan.create({
+      data: { name: 'Daily Pass', durationDays: 1, price: 150 }
+    });
+  }
+
+  // Fetch or create 7 Days Pass plan
+  let weeklyPassPlan = await prisma.membershipPlan.findFirst({
+    where: {
+      OR: [
+        { name: { contains: '7 Day' } },
+        { name: { contains: 'Weekly' } }
+      ]
+    }
+  });
+  if (!weeklyPassPlan) {
+    weeklyPassPlan = await prisma.membershipPlan.create({
+      data: { name: '7 Days Pass', durationDays: 7, price: 800 }
+    });
+  }
 
   const stats = [
     { label: "Total Members", value: totalMembers.toString(), icon: Users, color: "#3B82F6" },
@@ -104,10 +124,10 @@ export default async function Dashboard() {
       </div>
 
       <div style={{ marginTop: '24px' }}>
-        <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Quick Daily Pass</h2>
+        <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-main)', marginBottom: '16px' }}>Quick Short-Term Pass</h2>
         <Card padding="lg" style={{ maxWidth: '600px' }}>
-          {/* @ts-ignore - dailyPassPlan might be null but DailyPassWidget handles it */}
-          <DailyPassWidget plan={dailyPassPlan} />
+          {/* @ts-ignore */}
+          <DailyPassWidget dailyPassPlan={dailyPassPlan} weeklyPassPlan={weeklyPassPlan} />
         </Card>
       </div>
     </div>

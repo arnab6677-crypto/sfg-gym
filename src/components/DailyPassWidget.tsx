@@ -13,16 +13,28 @@ interface Plan {
   price: number;
 }
 
-export function DailyPassWidget({ plan }: { plan: Plan }) {
+export function DailyPassWidget({ dailyPassPlan, weeklyPassPlan }: { dailyPassPlan: Plan, weeklyPassPlan: Plan }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [amount, setAmount] = useState<number | string>(plan?.price || 150);
-  const [amountPaid, setAmountPaid] = useState<number | string>(plan?.price || 150);
+  const [passType, setPassType] = useState<'daily' | 'weekly'>('daily');
+  
+  const currentPlan = passType === 'daily' ? dailyPassPlan : weeklyPassPlan;
+  
+  const [amount, setAmount] = useState<number | string>(currentPlan?.price || 150);
+  const [amountPaid, setAmountPaid] = useState<number | string>(currentPlan?.price || 150);
   const [promisedDate, setPromisedDate] = useState<Date | null>(null);
+
+  // Update amount automatically when passType changes
+  useEffect(() => {
+    if (currentPlan) {
+      setAmount(currentPlan.price);
+      setAmountPaid(currentPlan.price);
+    }
+  }, [passType, currentPlan]);
 
   // Sync amountPaid to amount automatically when amount changes
   useEffect(() => {
@@ -38,7 +50,7 @@ export function DailyPassWidget({ plan }: { plan: Plan }) {
     formData.append('fullName', fullName);
     formData.append('phone', phone);
     formData.append('gender', 'Other'); // Default
-    formData.append('planId', plan?.id || '');
+    formData.append('planId', currentPlan?.id || '');
     formData.append('admissionFee', '0');
     formData.append('amount', amount.toString());
     formData.append('discount', '0');
@@ -55,11 +67,12 @@ export function DailyPassWidget({ plan }: { plan: Plan }) {
     const result = await createAdmission(formData);
     
     if (result.success) {
-      alert('Daily Pass recorded successfully!');
+      alert(`${currentPlan.name} recorded successfully!`);
       setFullName('');
       setPhone('');
-      setAmount(plan?.price || 150);
-      setAmountPaid(plan?.price || 150);
+      setPassType('daily');
+      setAmount(dailyPassPlan?.price || 150);
+      setAmountPaid(dailyPassPlan?.price || 150);
       setPromisedDate(null);
       router.refresh();
     } else {
@@ -68,12 +81,38 @@ export function DailyPassWidget({ plan }: { plan: Plan }) {
     setLoading(false);
   };
 
-  if (!plan) return <p style={{ color: 'var(--color-text-secondary)' }}>Daily Pass plan not configured.</p>;
+  if (!dailyPassPlan) return <p style={{ color: 'var(--color-text-secondary)' }}>Short-Term Pass plan not configured.</p>;
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {error && <div style={{ color: '#EF4444', backgroundColor: '#FEE2E2', padding: '12px', borderRadius: '8px', fontSize: '14px' }}>{error}</div>}
       
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+          <input 
+            type="radio" 
+            name="passType" 
+            value="daily" 
+            checked={passType === 'daily'} 
+            onChange={() => setPassType('daily')}
+          />
+          <span style={{ fontSize: '14px', fontWeight: 500 }}>1 Day Pass (₹{dailyPassPlan?.price || 150})</span>
+        </label>
+        
+        {weeklyPassPlan && (
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name="passType" 
+              value="weekly" 
+              checked={passType === 'weekly'} 
+              onChange={() => setPassType('weekly')}
+            />
+            <span style={{ fontSize: '14px', fontWeight: 500 }}>7 Days Pass (₹{weeklyPassPlan?.price || 800})</span>
+          </label>
+        )}
+      </div>
+
       <div style={{ display: 'flex', gap: '16px' }}>
         <div style={{ flex: 1 }}>
           <Input 
@@ -140,7 +179,7 @@ export function DailyPassWidget({ plan }: { plan: Plan }) {
       )}
 
       <Button type="submit" disabled={loading} style={{ marginTop: '8px' }}>
-        {loading ? 'Recording...' : 'Record Daily Pass'}
+        {loading ? 'Recording...' : `Record ${currentPlan?.name || 'Pass'}`}
       </Button>
     </form>
   );
