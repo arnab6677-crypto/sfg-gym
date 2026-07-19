@@ -200,7 +200,8 @@ We wish you success in achieving your fitness goals and look forward to seeing y
       if (window.confirm(`Admission successful! Member ID: ${result.regNumber}\n\nDo you want to send the invoice to their WhatsApp now?`)) {
         window.open(waUrl, '_blank');
       }
-      
+      alert('Admission successful!');
+      router.refresh();
       router.push('/members');
     } else {
       setError(result.error || 'Failed to create admission');

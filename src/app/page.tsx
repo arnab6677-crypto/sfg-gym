@@ -3,6 +3,8 @@ import styles from "./Dashboard.module.css";
 import { Users, AlertCircle, Activity, CalendarClock, UserPlus } from 'lucide-react';
 import prisma from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Dashboard() {
   const totalMembers = await prisma.member.count();
   const activeMembers = await prisma.member.count({ where: { status: 'ACTIVE' } });
@@ -14,6 +16,18 @@ export default async function Dashboard() {
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const newAdmissions = await prisma.member.count({
     where: { joiningDate: { gte: firstDayOfMonth } }
+  });
+
+  // Admissions Today
+  const nextDay = new Date(today);
+  nextDay.setDate(today.getDate() + 1);
+  const admissionsToday = await prisma.member.count({
+    where: {
+      joiningDate: {
+        gte: today,
+        lt: nextDay
+      }
+    }
   });
 
   // Expiring Soon (Next 7 days)
@@ -49,7 +63,8 @@ export default async function Dashboard() {
     { label: "Fees Due", value: `₹${feesDue.toLocaleString()}`, icon: AlertCircle, color: "#EF4444" },
     
     // Quick Insights
-    { label: "New Admissions", value: newAdmissions.toString(), icon: UserPlus, color: "#8B5CF6" },
+    { label: "Admissions (Today)", value: admissionsToday.toString(), icon: UserPlus, color: "#8B5CF6" },
+    { label: "Admissions (This Month)", value: newAdmissions.toString(), icon: UserPlus, color: "#8B5CF6" },
     { label: "Expiring Soon", value: expiringSoonCount.toString(), icon: CalendarClock, color: "#F97316" },
   ];
 
