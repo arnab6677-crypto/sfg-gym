@@ -48,7 +48,7 @@ export default async function Dashboard() {
   const overdueMembers = await prisma.member.findMany({
     where: { 
       status: 'ACTIVE',
-      membershipType: { not: 'Daily Pass' },
+      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] },
       OR: [
         { nextDueDate: { lt: today } },
         { nextDueDate: null }
