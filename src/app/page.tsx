@@ -10,12 +10,23 @@ export const dynamic = 'force-dynamic';
 export default async function Dashboard() {
   const totalMembers = await prisma.member.count();
   const activeMembers = await prisma.member.count({ where: { status: 'ACTIVE' } });
+  // Get current date/time in IST (Asia/Kolkata)
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric'
+  });
+  const [month, day, year] = formatter.format(now).split('/');
   
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Start of today in IST
+  const todayStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00+05:30`;
+  const today = new Date(todayStr);
 
   // New Admissions this month
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const firstDayOfMonthStr = `${year}-${month.padStart(2, '0')}-01T00:00:00+05:30`;
+  const firstDayOfMonth = new Date(firstDayOfMonthStr);
   const newAdmissions = await prisma.member.count({
     where: { joiningDate: { gte: firstDayOfMonth } }
   });
@@ -33,7 +44,7 @@ export default async function Dashboard() {
   });
 
   // Expiring Soon (Next 7 days)
-  const next7Days = new Date();
+  const next7Days = new Date(today);
   next7Days.setDate(next7Days.getDate() + 7);
   
   const expiringSoonCount = await prisma.payment.count({
