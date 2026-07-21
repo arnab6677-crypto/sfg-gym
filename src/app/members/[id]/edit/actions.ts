@@ -20,7 +20,57 @@ export async function updateMember(formData: FormData) {
     const ptPlan = formData.get('ptPlan') as string;
     const assignedTrainer = formData.get('assignedTrainer') as string | null;
     const nextDueDateStr = formData.get('nextDueDate') as string;
-    const nextDueDate = nextDueDateStr ? new Date(nextDueDateStr) : undefined;
+    let nextDueDate = nextDueDateStr ? new Date(nextDueDateStr) : undefined;
+    
+    const applyPlanChangeTo = formData.get('applyPlanChangeTo') as string;
+    const isPlanChanged = formData.get('isPlanChanged') === 'true';
+
+    // 1. If membership type changed, get the new plan details to update the base fee
+    let monthlyFeeAmount: number | undefined;
+    let newPlan: any = null;
+    
+    if (membershipType) {
+      newPlan = await prisma.membershipPlan.findFirst({
+        where: { name: membershipType }
+      });
+      if (newPlan) {
+        monthlyFeeAmount = newPlan.price;
+      }
+    }
+
+    // 2. Perform Current Month sync if requested
+    if (isPlanChanged && applyPlanChangeTo === 'CURRENT_MONTH' && newPlan) {
+      const latestPayment = await prisma.payment.findFirst({
+        where: { memberId },
+        orderBy: { paymentDate: 'desc' }
+      });
+
+      if (latestPayment) {
+        // Calculate new payment values based on the new plan
+        const newAmount = newPlan.price;
+        const newFinalAmount = newAmount + latestPayment.admissionFee + latestPayment.ptFee - latestPayment.discount;
+        const newBalanceDue = newFinalAmount - latestPayment.amountPaid;
+        
+        // Calculate new next due date based on payment date + new plan duration
+        const newCalculatedNextDueDate = new Date(latestPayment.paymentDate);
+        newCalculatedNextDueDate.setDate(newCalculatedNextDueDate.getDate() + newPlan.durationDays);
+        
+        // Override the form's nextDueDate with the mathematically calculated one
+        nextDueDate = newCalculatedNextDueDate;
+
+        // Update the payment record
+        await prisma.payment.update({
+          where: { id: latestPayment.id },
+          data: {
+            planId: newPlan.id,
+            amount: newAmount,
+            finalAmount: newFinalAmount,
+            balanceDue: newBalanceDue,
+            nextDueDate: newCalculatedNextDueDate
+          }
+        });
+      }
+    }
 
     await prisma.member.update({
       where: { id: memberId },
@@ -33,14 +83,16 @@ export async function updateMember(formData: FormData) {
         emergencyContact,
         status,
         membershipType,
+        ...(monthlyFeeAmount !== undefined && { monthlyFeeAmount }),
         ptPlan: ptPlan === 'None' ? null : ptPlan,
         assignedTrainer: ptPlan === 'None' ? null : assignedTrainer,
         ...(nextDueDate && { nextDueDate }),
       }
     });
 
-    if (nextDueDate) {
+    if (nextDueDate && !(isPlanChanged && applyPlanChangeTo === 'CURRENT_MONTH')) {
       // Also update the nextDueDate on their most recent payment, as this is often used for calculating due fees
+      // Only do this if we didn't ALREADY update it in the Current Month sync block above
       const latestPayment = await prisma.payment.findFirst({
         where: { memberId },
         orderBy: { paymentDate: 'desc' }

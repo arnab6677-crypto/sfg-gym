@@ -18,6 +18,9 @@ export default function EditMemberForm({ member, plans, trainers, ptPlans }: { m
   const [assignedTrainer, setAssignedTrainer] = useState<string>(member.assignedTrainer || '');
   const [status, setStatus] = useState<string>(member.status);
   const [planName, setPlanName] = useState<string>(member.membershipType || '');
+  const [applyPlanChangeTo, setApplyPlanChangeTo] = useState<'CURRENT_MONTH' | 'NEXT_MONTH'>('NEXT_MONTH');
+  
+  const isPlanChanged = planName !== (member.membershipType || '');
   
   // Try to find the next due date from the latest payment, fallback to member.nextDueDate
   const latestPayment = member.payments && member.payments.length > 0 ? member.payments[0] : null;
@@ -40,6 +43,8 @@ export default function EditMemberForm({ member, plans, trainers, ptPlans }: { m
     formData.append('memberId', member.id);
     formData.append('ptPlan', ptPlan);
     formData.append('nextDueDate', nextDueDate.toISOString());
+    formData.append('applyPlanChangeTo', applyPlanChangeTo);
+    formData.append('isPlanChanged', isPlanChanged.toString());
     if (assignedTrainer) formData.append('assignedTrainer', assignedTrainer);
 
     const result = await updateMember(formData);
@@ -101,7 +106,7 @@ export default function EditMemberForm({ member, plans, trainers, ptPlans }: { m
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Membership Settings</h3>
         <div className={styles.grid}>
-          <div className={styles.inputGroup}>
+          <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
             <label className={styles.label}>Monthly Plan (Membership Type) *</label>
             <select name="membershipType" value={planName} onChange={(e) => setPlanName(e.target.value)} className={styles.select} required>
               {plans.map(plan => (
@@ -109,6 +114,42 @@ export default function EditMemberForm({ member, plans, trainers, ptPlans }: { m
               ))}
             </select>
           </div>
+          
+          {isPlanChanged && (
+            <div className={styles.inputGroup} style={{ gridColumn: '1 / -1', backgroundColor: '#F0FDF4', padding: '16px', borderRadius: '8px', border: '1px solid #BBF7D0' }}>
+              <label className={styles.label} style={{ color: '#166534', marginBottom: '12px' }}>Apply Plan Change To:</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
+                  <input 
+                    type="radio" 
+                    name="applyPlanChangeTo" 
+                    value="NEXT_MONTH"
+                    checked={applyPlanChangeTo === 'NEXT_MONTH'}
+                    onChange={() => setApplyPlanChangeTo('NEXT_MONTH')}
+                    style={{ marginTop: '4px' }}
+                  />
+                  <div>
+                    <span style={{ display: 'block', fontWeight: 600, color: '#15803D' }}>Next Month (Recommended)</span>
+                    <span style={{ fontSize: '13px', color: '#166534' }}>Updates their profile. The new plan price will take effect the next time they pay.</span>
+                  </div>
+                </label>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
+                  <input 
+                    type="radio" 
+                    name="applyPlanChangeTo" 
+                    value="CURRENT_MONTH"
+                    checked={applyPlanChangeTo === 'CURRENT_MONTH'}
+                    onChange={() => setApplyPlanChangeTo('CURRENT_MONTH')}
+                    style={{ marginTop: '4px' }}
+                  />
+                  <div>
+                    <span style={{ display: 'block', fontWeight: 600, color: '#15803D' }}>Current Month (Sync Payment)</span>
+                    <span style={{ fontSize: '13px', color: '#166534' }}>Modifies their LATEST payment receipt. Recalculates Total Amount, Balance Due, and Expiry Date. Useful if they immediately upgraded after paying.</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          )}
         </div>
         
         <h3 className={styles.sectionTitle} style={{ marginTop: '24px' }}>Personal Training</h3>
