@@ -5,7 +5,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
   const params = await searchParams;
   const members = await prisma.member.findMany({
     where: {
-      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] }
+      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass', 'Monthly Membership (Without Admission)'] }
     },
     orderBy: { createdAt: 'desc' },
     include: {

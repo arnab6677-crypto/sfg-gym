@@ -16,13 +16,15 @@ import {
   Dumbbell,
   Wallet,
   ShoppingCart,
-  Ticket
+  Ticket,
+  UserMinus
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 const menuItems = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
   { name: 'Members', path: '/members', icon: Users },
+  { name: 'Monthly (No Admission)', path: '/monthly-no-admission', icon: UserMinus },
   { name: 'Short-Term Passes', path: '/passes', icon: Ticket },
   { name: 'PT Members', path: '/pt-members', icon: Dumbbell },
   { name: 'New Admission', path: '/admission', icon: UserPlus },
