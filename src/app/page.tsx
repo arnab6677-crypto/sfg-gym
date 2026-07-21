@@ -28,7 +28,10 @@ export default async function Dashboard() {
   const firstDayOfMonthStr = `${year}-${month.padStart(2, '0')}-01T00:00:00+05:30`;
   const firstDayOfMonth = new Date(firstDayOfMonthStr);
   const newAdmissions = await prisma.member.count({
-    where: { joiningDate: { gte: firstDayOfMonth } }
+    where: { 
+      joiningDate: { gte: firstDayOfMonth },
+      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] }
+    }
   });
 
   // Admissions Today
@@ -39,7 +42,8 @@ export default async function Dashboard() {
       joiningDate: {
         gte: today,
         lt: nextDay
-      }
+      },
+      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] }
     }
   });
 

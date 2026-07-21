@@ -4,6 +4,9 @@ import MembersClient from './MembersClient';
 export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const params = await searchParams;
   const members = await prisma.member.findMany({
+    where: {
+      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] }
+    },
     orderBy: { createdAt: 'desc' },
     include: {
       payments: {
