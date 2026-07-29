@@ -72,7 +72,7 @@ export default function PTMembersClient({ initialMembers, initialSearch = '' }: 
                   <td className={styles.fw600}>{member.regNumber}</td>
                   <td>{member.fullName}</td>
                   <td>{member.phone}</td>
-                  <td><span style={{ fontWeight: 600, color: 'var(--color-primary)' }}>{member.ptPlan}</span></td>
+                  <td><span style={{ fontWeight: 600, color: '#16A34A' }}>{member.ptPlan || 'N/A'}</span></td>
                   <td>{member.assignedTrainer || 'Unassigned'}</td>
                   <td>
                     <span className={`${styles.badge} ${isOverdue ? styles.badgeDanger : styles.badgeSuccess}`}>

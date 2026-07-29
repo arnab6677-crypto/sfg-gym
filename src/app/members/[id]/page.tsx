@@ -107,6 +107,10 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
                 </span>
               </div>
               <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>PT Plan</span>
+                <span className={styles.infoValue} style={{ fontWeight: 600, color: '#16A34A' }}>{member.ptPlan || 'None'}</span>
+              </div>
+              <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Assigned Trainer</span>
                 <span className={styles.infoValue}>{member.assignedTrainer || 'None'}</span>
               </div>
