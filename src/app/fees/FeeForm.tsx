@@ -43,7 +43,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
   const [ptFee, setPtFee] = useState<number | string>('0');
   const [assignedTrainer, setAssignedTrainer] = useState<string>('');
   
-  const [billingCycleStart, setBillingCycleStart] = useState<'TODAY' | 'CONTINUE'>('TODAY');
+  const [billingCycleStart, setBillingCycleStart] = useState<'TODAY' | 'CONTINUE'>('CONTINUE');
 
   const selectedMember = members.find(m => m.id === memberId);
 
@@ -57,8 +57,8 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
       const nextDueDate = latestPayment ? new Date(latestPayment.paymentDate) /* fallback */ : new Date(selectedMember.nextDueDate || new Date());
       // Wait, we need the actual nextDueDate of the latest payment.
       // But the member object passed in only has payments: { paymentDate: Date }[]
-      // Let's just default it to TODAY and let the admin change it if they want.
-      setBillingCycleStart('TODAY');
+      // Let's just default it to CONTINUE and let the admin change it if they want a gap.
+      setBillingCycleStart('CONTINUE');
     }
   }, [selectedMember]);
   
@@ -265,6 +265,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
               </div>
             </label>
           </div>
+        </div>
         </div>
 
         <h3 className={styles.sectionTitle} style={{ marginTop: '24px' }}>Amount Collection</h3>
