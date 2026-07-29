@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Search, Eye } from 'lucide-react';
+import { Search, Eye, MessageCircle } from 'lucide-react';
 import { formatDate } from '@/lib/formatDate';
 import Link from 'next/link';
 import styles from '../members/Members.module.css'; // Reusing Members styles
@@ -26,6 +26,23 @@ export default function MonthlyNoAdmissionClient({ initialMembers, initialSearch
       latestReceipt.toLowerCase().includes(search)
     );
   });
+
+  const handleWhatsApp = (member: any) => {
+    const cleanPhone = member.phone.replace(/\D/g, '');
+    
+    const message = `Hello ${member.fullName},
+    
+This is a gentle reminder from STRENGTH FUSION GYM (SFG) 💪
+
+Your Monthly Membership is currently OVERDUE. Please clear your pending dues to continue your uninterrupted training with us!
+
+If you have already paid, please ignore this message.
+
+— Team SFG 💙`;
+
+    const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+  };
 
   return (
     <Card padding="none" className={styles.container}>
@@ -86,6 +103,17 @@ export default function MonthlyNoAdmissionClient({ initialMembers, initialSearch
                           <Eye size={16} />
                         </Button>
                       </Link>
+                      {isOverdue && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleWhatsApp(member)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#16A34A', borderColor: '#16A34A' }}
+                          title="Send Overdue Reminder"
+                        >
+                          <MessageCircle size={14} /> Send WP
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>
