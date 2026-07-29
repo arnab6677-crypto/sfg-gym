@@ -50,12 +50,15 @@ export async function collectFee(formData: FormData) {
       orderBy: { nextDueDate: 'desc' },
     });
 
-    // If the old due date has already passed, start from today.
-    // If it's still in the future, add the new days to the existing due date.
-    let baseDate = new Date();
-    if (lastPayment && new Date(lastPayment.nextDueDate) > baseDate) {
+    // Billing Cycle Start Logic (Gap Month)
+    const billingCycleStart = formData.get('billingCycleStart') as string;
+    let baseDate = new Date(); // Default to today
+    
+    if (billingCycleStart === 'CONTINUE' && lastPayment && lastPayment.nextDueDate) {
       baseDate = new Date(lastPayment.nextDueDate);
     }
+    
+    // Fallback: If they selected CONTINUE but there's no last payment, it just uses today.
 
     const nextDueDate = new Date(baseDate);
     nextDueDate.setDate(nextDueDate.getDate() + (plan.durationDays * quantity));
