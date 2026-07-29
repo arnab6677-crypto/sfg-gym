@@ -50,18 +50,21 @@ export async function collectFee(formData: FormData) {
       orderBy: { nextDueDate: 'desc' },
     });
 
-    // Billing Cycle Start Logic (Gap Month)
-    const billingCycleStart = formData.get('billingCycleStart') as string;
-    let baseDate = new Date(); // Default to today
+    // Exact Due Date Override
+    const nextDueDateOverrideStr = formData.get('nextDueDateOverride') as string;
+    let nextDueDate = new Date();
     
-    if (billingCycleStart === 'CONTINUE' && lastPayment && lastPayment.nextDueDate) {
-      baseDate = new Date(lastPayment.nextDueDate);
+    if (nextDueDateOverrideStr) {
+      nextDueDate = new Date(nextDueDateOverrideStr);
+    } else {
+      // Fallback just in case
+      let baseDate = new Date();
+      if (lastPayment && lastPayment.nextDueDate) {
+        baseDate = new Date(lastPayment.nextDueDate);
+      }
+      nextDueDate = new Date(baseDate);
+      nextDueDate.setDate(nextDueDate.getDate() + (plan.durationDays * quantity));
     }
-    
-    // Fallback: If they selected CONTINUE but there's no last payment, it just uses today.
-
-    const nextDueDate = new Date(baseDate);
-    nextDueDate.setDate(nextDueDate.getDate() + (plan.durationDays * quantity));
 
     const result = await prisma.$transaction(async (tx) => {
       const payment = await tx.payment.create({

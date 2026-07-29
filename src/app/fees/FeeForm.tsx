@@ -43,24 +43,32 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
   const [ptFee, setPtFee] = useState<number | string>('0');
   const [assignedTrainer, setAssignedTrainer] = useState<string>('');
   
-  const [billingCycleStart, setBillingCycleStart] = useState<'TODAY' | 'CONTINUE'>('CONTINUE');
+  const [nextDueDateOverride, setNextDueDateOverride] = useState<Date>(new Date());
 
   const selectedMember = members.find(m => m.id === memberId);
 
-  // Sync initial PT options and determine if they are overdue
+  // Sync initial PT options and default due date
   useEffect(() => {
     if (selectedMember) {
       setPtPlan(selectedMember.ptPlan || 'None');
       setAssignedTrainer(selectedMember.assignedTrainer || '');
       
       const latestPayment = selectedMember.payments && selectedMember.payments.length > 0 ? selectedMember.payments[0] : null;
-      const nextDueDate = latestPayment ? new Date(latestPayment.paymentDate) /* fallback */ : new Date(selectedMember.nextDueDate || new Date());
-      // Wait, we need the actual nextDueDate of the latest payment.
-      // But the member object passed in only has payments: { paymentDate: Date }[]
-      // Let's just default it to CONTINUE and let the admin change it if they want a gap.
-      setBillingCycleStart('CONTINUE');
+      const baseDate = latestPayment ? new Date(latestPayment.paymentDate) /* fallback */ : new Date(selectedMember.nextDueDate || new Date());
+      // The member list only fetches paymentDate currently. We actually rely on the backend for true accuracy if they don't override.
+      // But we can approximate it for the UI picker. 
+      // Actually, if we have selectedMember.nextDueDate, we should use that as the base date.
+      const accurateBaseDate = new Date(selectedMember.nextDueDate || new Date());
+      
+      const defaultNextDue = new Date(accurateBaseDate);
+      const q = Number(quantity) || 1;
+      const selectedPlan = plans.find(p => p.id === planId);
+      const days = selectedPlan ? selectedPlan.durationDays : 30;
+      defaultNextDue.setDate(defaultNextDue.getDate() + (days * q));
+      
+      setNextDueDateOverride(defaultNextDue);
     }
-  }, [selectedMember]);
+  }, [selectedMember, planId, quantity, plans]);
   
   // Payment calculations
   // ptFee is manually entered since ptPlans are dynamic strings
@@ -137,7 +145,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
     formData.append('ptPlan', ptPlan);
     formData.append('ptFee', ptFee.toString());
     if (assignedTrainer) formData.append('assignedTrainer', assignedTrainer);
-    formData.append('billingCycleStart', billingCycleStart);
+    formData.append('nextDueDateOverride', nextDueDateOverride.toISOString());
 
     const result = await collectFee(formData);
     
@@ -234,38 +242,12 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
         <h3 className={styles.sectionTitle}>Payment Details</h3>
         <div className={styles.grid}>
           <div className={styles.inputGroup} style={{ gridColumn: '1 / -1', backgroundColor: '#F0FDF4', padding: '16px', borderRadius: '8px', border: '1px solid #BBF7D0', marginBottom: '12px' }}>
-            <label className={styles.label} style={{ color: '#166534', marginBottom: '12px' }}>Billing Cycle Start *</label>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
-              <input 
-                type="radio" 
-                name="billingCycleStart" 
-                value="TODAY"
-                checked={billingCycleStart === 'TODAY'}
-                onChange={() => setBillingCycleStart('TODAY')}
-                style={{ marginTop: '4px' }}
-              />
-              <div>
-                <span style={{ display: 'block', fontWeight: 600, color: '#15803D' }}>Start Fresh from Today (Apply Gap)</span>
-                <span style={{ fontSize: '13px', color: '#166534' }}>The new due date will be calculated exactly 1 month/cycle from today. Perfect for members returning from a gap.</span>
-              </div>
-            </label>
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
-              <input 
-                type="radio" 
-                name="billingCycleStart" 
-                value="CONTINUE"
-                checked={billingCycleStart === 'CONTINUE'}
-                onChange={() => setBillingCycleStart('CONTINUE')}
-                style={{ marginTop: '4px' }}
-              />
-              <div>
-                <span style={{ display: 'block', fontWeight: 600, color: '#15803D' }}>Continue from Previous Due Date</span>
-                <span style={{ fontSize: '13px', color: '#166534' }}>The new due date will be strictly added to their old expiry date. Use this if they are paying late but you don't want to give them free days.</span>
-              </div>
-            </label>
+            <label className={styles.label} style={{ color: '#166534', marginBottom: '8px' }}>New Due Date (After Payment) *</label>
+            <CustomDatePicker selected={nextDueDateOverride} onChange={(date) => setNextDueDateOverride(date || new Date())} name="nextDueDateOverrideDummy" />
+            <p style={{ fontSize: '13px', color: '#166534', marginTop: '8px' }}>
+              This is mathematically calculated to keep the same day every month. If they took a gap month and this date is in the past, simply click to change it to the correct future date!
+            </p>
           </div>
-        </div>
         </div>
 
         <h3 className={styles.sectionTitle} style={{ marginTop: '24px' }}>Amount Collection</h3>
