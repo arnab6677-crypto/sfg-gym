@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { addProduct, deleteProduct, recordSale, recordInventoryPurchase, deleteStoreSale } from './actions';
-import { ShoppingCart, Plus, Trash2, Package, TrendingDown } from 'lucide-react';
+import { addProduct, deleteProduct, recordSale, recordInventoryPurchase, deleteStoreSale, editProduct } from './actions';
+import { ShoppingCart, Plus, Trash2, Package, TrendingDown, Edit2, Save, X } from 'lucide-react';
 import styles from '../members/Members.module.css'; // Reusing table styles
 import { useRouter } from 'next/navigation';
 
 export default function StoreClient({ products, sales }: { products: any[], sales: any[] }) {
   const [isPending, setIsPending] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const router = useRouter();
 
   async function handleAddProduct(e: React.FormEvent<HTMLFormElement>) {
@@ -18,6 +19,17 @@ export default function StoreClient({ products, sales }: { products: any[], sale
     setIsPending(true);
     await addProduct(new FormData(e.currentTarget));
     e.currentTarget.reset();
+    router.refresh();
+    setIsPending(false);
+  }
+
+  async function handleEditProduct(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!editingProduct) return;
+    setIsPending(true);
+    await editProduct(editingProduct.id, new FormData(e.currentTarget));
+    e.currentTarget.reset();
+    setEditingProduct(null);
     router.refresh();
     setIsPending(false);
   }
@@ -109,22 +121,27 @@ export default function StoreClient({ products, sales }: { products: any[], sale
           <p style={{ color: 'var(--color-text-secondary)', marginTop: '4px' }}>Manage energy drinks and supplements.</p>
         </div>
         
-        <form onSubmit={handleAddProduct} style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <form key={editingProduct ? editingProduct.id : 'new'} onSubmit={editingProduct ? handleEditProduct : handleAddProduct} style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '150px' }}>
-            <Input placeholder="Product Name" name="name" required />
+            <Input placeholder="Product Name" name="name" required defaultValue={editingProduct?.name || ''} />
           </div>
           <div style={{ minWidth: '120px' }}>
-            <select name="category" required style={{ width: '100%', padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-main)', color: 'var(--color-text-main)' }}>
+            <select name="category" required defaultValue={editingProduct?.category || 'ENERGY_DRINK'} style={{ width: '100%', padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-main)', color: 'var(--color-text-main)' }}>
               <option value="ENERGY_DRINK">Energy Drink</option>
               <option value="SUPPLEMENT">Supplement</option>
             </select>
           </div>
           <div style={{ width: '100px' }}>
-            <Input type="number" placeholder="Price" name="price" required min="0" />
+            <Input type="number" placeholder="Price" name="price" required min="0" defaultValue={editingProduct?.price || ''} />
           </div>
           <Button type="submit" variant="primary" disabled={isPending}>
-            <Plus size={18} /> Add
+            {editingProduct ? <Save size={18} /> : <Plus size={18} />} {editingProduct ? 'Save' : 'Add'}
           </Button>
+          {editingProduct && (
+            <Button type="button" variant="outline" onClick={() => setEditingProduct(null)} disabled={isPending}>
+              <X size={18} /> Cancel
+            </Button>
+          )}
         </form>
 
         <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid var(--color-border)', borderRadius: '8px' }}>
@@ -146,9 +163,14 @@ export default function StoreClient({ products, sales }: { products: any[], sale
                   <td>{p.category === 'ENERGY_DRINK' ? 'Energy Drink' : 'Supplement'}</td>
                   <td>₹{p.price}</td>
                   <td style={{ textAlign: 'right' }}>
-                    <button onClick={() => handleDeleteProduct(p.id)} disabled={isPending} style={{ color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer' }}>
-                      <Trash2 size={16} />
-                    </button>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                      <button onClick={() => setEditingProduct(p)} disabled={isPending} style={{ color: 'var(--color-primary)', background: 'none', border: 'none', cursor: 'pointer' }} title="Edit">
+                        <Edit2 size={16} />
+                      </button>
+                      <button onClick={() => handleDeleteProduct(p.id)} disabled={isPending} style={{ color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer' }} title="Delete">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

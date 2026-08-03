@@ -23,6 +23,19 @@ export async function deleteProduct(productId: string) {
   revalidatePath('/store');
 }
 
+export async function editProduct(productId: string, formData: FormData) {
+  const name = formData.get('name') as string;
+  const category = formData.get('category') as string;
+  const price = parseFloat(formData.get('price') as string);
+
+  await prisma.product.update({
+    where: { id: productId },
+    data: { name, category, price },
+  });
+
+  revalidatePath('/store');
+}
+
 export async function recordSale(formData: FormData) {
   const productId = formData.get('productId') as string;
   const quantity = parseInt(formData.get('quantity') as string);
