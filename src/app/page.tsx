@@ -8,8 +8,14 @@ import prisma from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
 export default async function Dashboard() {
-  const totalMembers = await prisma.member.count();
-  const activeMembers = await prisma.member.count({ where: { status: 'ACTIVE' } });
+  const excludedTypes = ['Daily Pass', '7 Days Pass', 'Weekly Pass', 'Monthly Membership (Without Admission)'];
+  
+  const totalMembers = await prisma.member.count({
+    where: { membershipType: { notIn: excludedTypes } }
+  });
+  const activeMembers = await prisma.member.count({ 
+    where: { status: 'ACTIVE', membershipType: { notIn: excludedTypes } } 
+  });
   // Get current date/time in IST (Asia/Kolkata)
   const now = new Date();
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -30,7 +36,7 @@ export default async function Dashboard() {
   const newAdmissions = await prisma.member.count({
     where: { 
       joiningDate: { gte: firstDayOfMonth },
-      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] }
+      membershipType: { notIn: excludedTypes }
     }
   });
 
@@ -43,7 +49,7 @@ export default async function Dashboard() {
         gte: today,
         lt: nextDay
       },
-      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] }
+      membershipType: { notIn: excludedTypes }
     }
   });
 
@@ -56,6 +62,9 @@ export default async function Dashboard() {
       nextDueDate: {
         gte: today,
         lte: next7Days
+      },
+      member: {
+        membershipType: { notIn: excludedTypes }
       }
     }
   });
@@ -64,7 +73,7 @@ export default async function Dashboard() {
   const overdueMembers = await prisma.member.findMany({
     where: { 
       status: 'ACTIVE',
-      membershipType: { notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass'] },
+      membershipType: { notIn: excludedTypes },
       OR: [
         { nextDueDate: { lt: today } },
         { nextDueDate: null }
@@ -73,6 +82,27 @@ export default async function Dashboard() {
   });
   
   const feesDue = overdueMembers.reduce((acc, m) => acc + (m.monthlyFeeAmount || 0), 0);
+
+  // --- Monthly (No Admission) Stats ---
+  const noAdmissionTotal = await prisma.member.count({
+    where: { membershipType: 'Monthly Membership (Without Admission)' }
+  });
+  const noAdmissionActive = await prisma.member.count({
+    where: { status: 'ACTIVE', membershipType: 'Monthly Membership (Without Admission)' }
+  });
+  
+  const noAdmissionOverdue = await prisma.member.findMany({
+    where: { 
+      status: 'ACTIVE',
+      membershipType: 'Monthly Membership (Without Admission)',
+      OR: [
+        { nextDueDate: { lt: today } },
+        { nextDueDate: null }
+      ]
+    }
+  });
+  const noAdmissionFeesDue = noAdmissionOverdue.reduce((acc, m) => acc + (m.monthlyFeeAmount || 0), 0);
+
 
   // Fetch or create Daily Pass plan
   let dailyPassPlan = await prisma.membershipPlan.findFirst({
@@ -132,6 +162,12 @@ export default async function Dashboard() {
     { label: "Expiring Soon", value: expiringSoonCount.toString(), icon: CalendarClock, color: "#F97316" },
   ];
 
+  const noAdmissionStats = [
+    { label: "Total Members", value: noAdmissionTotal.toString(), icon: Users, color: "#4B5563" },
+    { label: "Active Members", value: noAdmissionActive.toString(), icon: Activity, color: "#059669" },
+    { label: "Fees Due", value: `₹${noAdmissionFeesDue.toLocaleString()}`, icon: AlertCircle, color: "#DC2626" },
+  ];
+
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
@@ -141,6 +177,27 @@ export default async function Dashboard() {
 
       <div className={styles.statsGrid}>
         {stats.map((stat, i) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={i} className={styles.statCard}>
+              <div className={styles.statIconWrapper} style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
+                <Icon size={24} />
+              </div>
+              <div className={styles.statInfo}>
+                <p className={styles.statLabel}>{stat.label}</p>
+                <h3 className={styles.statValue}>{stat.value}</h3>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      <header className={styles.header} style={{ marginTop: '32px' }}>
+        <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-main)' }}>Monthly (No Admission) Overview</h2>
+      </header>
+
+      <div className={styles.statsGrid}>
+        {noAdmissionStats.map((stat, i) => {
           const Icon = stat.icon;
           return (
             <Card key={i} className={styles.statCard}>
