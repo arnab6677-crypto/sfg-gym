@@ -28,6 +28,7 @@ const menuItems = [
   { name: 'Short-Term Passes', path: '/passes', icon: Ticket },
   { name: 'PT Members', path: '/pt-members', icon: Dumbbell },
   { name: 'New Admission', path: '/admission', icon: UserPlus },
+  { name: 'Admissions (This Month)', path: '/admissions-this-month', icon: UserPlus },
   { name: 'Fee Collection', path: '/fees', icon: IndianRupee },
   { name: 'Store', path: '/store', icon: ShoppingCart },
   { name: 'Expenses', path: '/expenses', icon: Wallet },

@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import Link from 'next/link';
 import styles from "./Dashboard.module.css";
 import { Users, AlertCircle, Activity, CalendarClock, UserPlus } from 'lucide-react';
 import { DailyPassWidget } from "@/components/DailyPassWidget";
@@ -158,7 +159,7 @@ export default async function Dashboard() {
     
     // Quick Insights
     { label: "Admissions (Today)", value: admissionsToday.toString(), icon: UserPlus, color: "#8B5CF6" },
-    { label: "Admissions (This Month)", value: newAdmissions.toString(), icon: UserPlus, color: "#8B5CF6" },
+    { label: "Admissions (This Month)", value: newAdmissions.toString(), icon: UserPlus, color: "#8B5CF6", link: "/admissions-this-month" },
     { label: "Expiring Soon", value: expiringSoonCount.toString(), icon: CalendarClock, color: "#F97316" },
   ];
 
@@ -178,7 +179,7 @@ export default async function Dashboard() {
       <div className={styles.statsGrid}>
         {stats.map((stat, i) => {
           const Icon = stat.icon;
-          return (
+          const cardContent = (
             <Card key={i} className={styles.statCard}>
               <div className={styles.statIconWrapper} style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
                 <Icon size={24} />
@@ -189,6 +190,12 @@ export default async function Dashboard() {
               </div>
             </Card>
           );
+          
+          return stat.link ? (
+            <Link href={stat.link} key={i} style={{ textDecoration: 'none' }}>
+              {cardContent}
+            </Link>
+          ) : cardContent;
         })}
       </div>
 
