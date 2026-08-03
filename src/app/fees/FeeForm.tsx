@@ -167,10 +167,18 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
       const waUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
       
       if (window.confirm(`Fee collected successfully!\n\nDo you want to send the receipt to their WhatsApp now?`)) {
-        window.open(waUrl, '_blank');
+        const newWindow = window.open(waUrl, '_blank');
+        
+        // Browsers block popups if they happen after an async 'await' delay.
+        // If it was blocked, newWindow will be null. Fallback to redirecting the current tab.
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          window.location.href = waUrl;
+        } else {
+          router.push('/history');
+        }
+      } else {
+        router.push('/history');
       }
-      
-      router.push('/history');
     } else {
       setError(result.error || 'Failed to process fee.');
       setLoading(false);
