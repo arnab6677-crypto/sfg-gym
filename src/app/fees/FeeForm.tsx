@@ -162,7 +162,14 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
       };
       const planName = getDisplayPlanName(selectedPlan?.name);
 
-      const message = `Hi ${selectedMember?.fullName},\n\nYour fee payment at STRENGTH FUSION GYM was successful! 💪\n\nAmount Paid: ₹${finalAmount}\nMembership: ${planName}\nReceipt: ${result.receiptNumber || 'N/A'}\n\n📄 *View and download your official digital receipt:* \nhttps://sfg-gym-website.vercel.app/receipt/${result.receiptNumber}\n\nThank you for choosing SFG!`;
+      const amountPaidNum = Number(amountPaid) || 0;
+      let paymentDetailsText = `Amount Paid: ₹${finalAmount}`;
+      
+      if (amountPaidNum < finalAmount) {
+        paymentDetailsText = `Remaining Balance: ₹${finalAmount - amountPaidNum}`;
+      }
+
+      const message = `Hi ${selectedMember?.fullName},\n\nYour fee payment at STRENGTH FUSION GYM was successful! 💪\n\n${paymentDetailsText}\nMembership: ${planName}\nReceipt: ${result.receiptNumber || 'N/A'}\n\n📄 *View and download your official digital receipt:* \nhttps://sfg-gym-website.vercel.app/receipt/${result.receiptNumber}\n\nThank you for choosing SFG!`;
       
       const waUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
       
