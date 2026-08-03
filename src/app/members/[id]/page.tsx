@@ -33,6 +33,14 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
     t.setHours(0,0,0,0);
     return d < t;
   })();
+  
+  let statusLabel = member.status || 'ACTIVE';
+  let badgeClass = statusLabel === 'ACTIVE' ? styles.badgeSuccess : styles.badgeDanger;
+  
+  if (statusLabel === 'ACTIVE' && isOverdue) {
+    statusLabel = 'OVERDUE';
+    badgeClass = styles.badgeDanger;
+  }
 
   return (
     <div className={styles.container}>
@@ -92,8 +100,8 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
             <div className={styles.infoList}>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Status</span>
-                <span className={`${styles.badge} ${isOverdue ? styles.badgeDanger : styles.badgeSuccess}`}>
-                  {isOverdue ? 'OVERDUE' : 'ACTIVE'}
+                <span className={`${styles.badge} ${badgeClass}`}>
+                  {statusLabel}
                 </span>
               </div>
               <div className={styles.infoItem}>

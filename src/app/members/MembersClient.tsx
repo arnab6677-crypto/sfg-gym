@@ -69,7 +69,14 @@ export default function MembersClient({ initialMembers, initialSearch = '' }: { 
                 return d < t;
               })();
               const isShortTermPass = member.membershipType === 'Daily Pass' || member.membershipType === '7 Days Pass' || member.membershipType === 'Weekly Pass';
-              const statusLabel = isOverdue ? (isShortTermPass ? 'INACTIVE' : 'OVERDUE') : 'ACTIVE';
+              
+              let statusLabel = member.status || 'ACTIVE';
+              let badgeClass = statusLabel === 'ACTIVE' ? styles.badgeSuccess : styles.badgeDanger;
+              
+              if (statusLabel === 'ACTIVE' && isOverdue) {
+                statusLabel = isShortTermPass ? 'INACTIVE' : 'OVERDUE';
+                badgeClass = styles.badgeDanger;
+              }
               
               return (
                 <tr key={member.id}>
@@ -86,7 +93,7 @@ export default function MembersClient({ initialMembers, initialSearch = '' }: { 
                   </td>
                   <td>{member.phone}</td>
                   <td>
-                    <span className={`${styles.badge} ${isOverdue ? (isShortTermPass ? styles.badgeDanger : styles.badgeDanger) : styles.badgeSuccess}`}>
+                    <span className={`${styles.badge} ${badgeClass}`}>
                       {statusLabel}
                     </span>
                   </td>

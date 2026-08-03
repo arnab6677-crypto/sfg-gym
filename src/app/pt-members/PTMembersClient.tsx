@@ -65,7 +65,14 @@ export default function PTMembersClient({ initialMembers, initialSearch = '' }: 
                 return d < t;
               })();
               const isDailyPass = member.membershipType === 'Daily Pass';
-              const statusLabel = isOverdue ? (isDailyPass ? 'INACTIVE' : 'OVERDUE') : 'ACTIVE';
+              
+              let statusLabel = member.status || 'ACTIVE';
+              let badgeClass = statusLabel === 'ACTIVE' ? styles.badgeSuccess : styles.badgeDanger;
+              
+              if (statusLabel === 'ACTIVE' && isOverdue) {
+                statusLabel = isDailyPass ? 'INACTIVE' : 'OVERDUE';
+                badgeClass = styles.badgeDanger;
+              }
               
               return (
                 <tr key={member.id}>
@@ -75,7 +82,7 @@ export default function PTMembersClient({ initialMembers, initialSearch = '' }: 
                   <td><span style={{ fontWeight: 600, color: '#16A34A' }}>{member.ptPlan || 'N/A'}</span></td>
                   <td>{member.assignedTrainer || 'Unassigned'}</td>
                   <td>
-                    <span className={`${styles.badge} ${isOverdue ? styles.badgeDanger : styles.badgeSuccess}`}>
+                    <span className={`${styles.badge} ${badgeClass}`}>
                       {statusLabel}
                     </span>
                   </td>

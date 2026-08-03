@@ -81,7 +81,13 @@ If you have already paid, please ignore this message.
                 t.setHours(0,0,0,0);
                 return d < t;
               })();
-              const statusLabel = isOverdue ? 'OVERDUE' : 'ACTIVE';
+              let statusLabel = member.status || 'ACTIVE';
+              let badgeClass = statusLabel === 'ACTIVE' ? styles.badgeSuccess : styles.badgeDanger;
+              
+              if (statusLabel === 'ACTIVE' && isOverdue) {
+                statusLabel = 'OVERDUE';
+                badgeClass = styles.badgeDanger;
+              }
               
               return (
                 <tr key={member.id}>
@@ -89,7 +95,7 @@ If you have already paid, please ignore this message.
                   <td>{member.fullName}</td>
                   <td>{member.phone}</td>
                   <td>
-                    <span className={`${styles.badge} ${isOverdue ? styles.badgeDanger : styles.badgeSuccess}`}>
+                    <span className={`${styles.badge} ${badgeClass}`}>
                       {statusLabel}
                     </span>
                   </td>
