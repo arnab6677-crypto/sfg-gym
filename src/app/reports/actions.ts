@@ -130,11 +130,22 @@ export async function resetReportsPassword(newPassword: string) {
 
 export async function getCustomReportData(startDateStr: string, endDateStr: string) {
   try {
-    const startDate = new Date(startDateStr);
-    const endDate = new Date(endDateStr);
+    // The client sends ISO strings. We need to treat them as IST dates.
+    // e.g., if client picked Aug 1, we want Aug 1 00:00:00 IST to Aug 1 23:59:59 IST
     
-    // Set endDate to the very end of the day to include all transactions on that day
-    endDate.setHours(23, 59, 59, 999);
+    // Parse the date strictly from the string to avoid timezone shifts
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric'
+    });
+    
+    const [sMonth, sDay, sYear] = formatter.format(new Date(startDateStr)).split('/');
+    const [eMonth, eDay, eYear] = formatter.format(new Date(endDateStr)).split('/');
+
+    const startDate = new Date(`${sYear}-${sMonth.padStart(2, '0')}-${sDay.padStart(2, '0')}T00:00:00+05:30`);
+    const endDate = new Date(`${eYear}-${eMonth.padStart(2, '0')}-${eDay.padStart(2, '0')}T23:59:59+05:30`);
 
     const payments = await prisma.payment.findMany({
       where: {

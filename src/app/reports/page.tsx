@@ -13,10 +13,17 @@ export default async function ReportsPage() {
     redirect('/reports/login');
   }
 
-  const today = new Date();
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric'
+  });
+  const [month, day, year] = formatter.format(now).split('/');
   
   // Calculate Daily Collection & Expenses
-  const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+  const startOfDay = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00+05:30`);
   const dailyPayments = await prisma.payment.aggregate({
     _sum: { finalAmount: true },
     where: { paymentDate: { gte: startOfDay } }
@@ -34,7 +41,7 @@ export default async function ReportsPage() {
   const dailyProfit = dailyCollection - dailyExpenseAmt;
 
   // Calculate Monthly Collection & Expenses
-  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const startOfMonth = new Date(`${year}-${month.padStart(2, '0')}-01T00:00:00+05:30`);
   const monthlyPayments = await prisma.payment.aggregate({
     _sum: { finalAmount: true },
     where: { paymentDate: { gte: startOfMonth } }
@@ -52,7 +59,7 @@ export default async function ReportsPage() {
   const monthlyProfit = monthlyCollection - monthlyExpenseAmt;
 
   // Calculate Yearly Collection & Expenses
-  const startOfYear = new Date(today.getFullYear(), 0, 1);
+  const startOfYear = new Date(`${year}-01-01T00:00:00+05:30`);
   const yearlyPayments = await prisma.payment.aggregate({
     _sum: { finalAmount: true },
     where: { paymentDate: { gte: startOfYear } }
@@ -71,7 +78,7 @@ export default async function ReportsPage() {
 
   // --- CHART DATA CALCULATIONS ---
   // Last 30 Days Revenue Chart Data
-  const thirtyDaysAgo = new Date(today);
+  const thirtyDaysAgo = new Date(startOfDay);
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
 
   const recentPayments = await prisma.payment.findMany({
@@ -87,15 +94,17 @@ export default async function ReportsPage() {
   const dailyRevenueMap = new Map<string, number>();
   
   for (let i = 29; i >= 0; i--) {
-    const d = new Date(today);
+    const d = new Date(startOfDay);
     d.setDate(d.getDate() - i);
-    const dateStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+    const formatterDay = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' });
+    const dateStr = formatterDay.format(d);
     dailyRevenueMap.set(dateStr, 0);
   }
 
   recentPayments.forEach(payment => {
     const d = new Date(payment.paymentDate);
-    const dateStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+    const formatterDay = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' });
+    const dateStr = formatterDay.format(d);
     if (dailyRevenueMap.has(dateStr)) {
       dailyRevenueMap.set(dateStr, dailyRevenueMap.get(dateStr)! + payment.finalAmount);
     }
@@ -108,15 +117,17 @@ export default async function ReportsPage() {
   const dailyExpensesMap = new Map<string, number>();
   
   for (let i = 29; i >= 0; i--) {
-    const d = new Date(today);
+    const d = new Date(startOfDay);
     d.setDate(d.getDate() - i);
-    const dateStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+    const formatterDay = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' });
+    const dateStr = formatterDay.format(d);
     dailyExpensesMap.set(dateStr, 0);
   }
 
   recentExpenses.forEach(expense => {
     const d = new Date(expense.date);
-    const dateStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+    const formatterDay = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' });
+    const dateStr = formatterDay.format(d);
     if (dailyExpensesMap.has(dateStr)) {
       dailyExpensesMap.set(dateStr, dailyExpensesMap.get(dateStr)! + expense.amount);
     }
