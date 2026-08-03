@@ -8,7 +8,7 @@ export default async function DueFeesPage() {
     where: { 
       status: 'ACTIVE',
       membershipType: {
-        not: 'Daily Pass'
+        notIn: ['Daily Pass', '7 Days Pass', 'Weekly Pass', 'Monthly Membership (Without Admission)']
       }
     },
     include: {
