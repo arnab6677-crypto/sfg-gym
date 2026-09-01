@@ -70,6 +70,26 @@ export default async function Dashboard() {
     }
   });
 
+  // Auto-cleanup: Delete Daily Passes older than 48 hours
+  const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+  const oldPassMembers = await prisma.member.findMany({
+    where: {
+      membershipType: 'Daily Pass',
+      createdAt: { lt: fortyEightHoursAgo }
+    },
+    select: { id: true }
+  });
+
+  if (oldPassMembers.length > 0) {
+    const oldPassIds = oldPassMembers.map(m => m.id);
+    await prisma.payment.deleteMany({
+      where: { memberId: { in: oldPassIds } }
+    });
+    await prisma.member.deleteMany({
+      where: { id: { in: oldPassIds } }
+    });
+  }
+
   // Calculate Due Fees Total (Sum of monthly fees for active overdue members)
   const overdueMembers = await prisma.member.findMany({
     where: { 
