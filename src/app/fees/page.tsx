@@ -31,6 +31,7 @@ export default async function FeesPage({ searchParams }: { searchParams: Promise
 
   const trainers = settings?.trainers?.split(',').map(s => s.trim()).filter(Boolean) || [];
   const ptPlans = settings?.ptPlans?.split(',').map(s => s.trim()).filter(Boolean) || [];
+  const defaultAdmissionFee = settings?.admissionFee || 500;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -40,7 +41,7 @@ export default async function FeesPage({ searchParams }: { searchParams: Promise
       </div>
 
       <Card padding="lg">
-        <FeeForm plans={plans as any} members={members as any} initialMemberId={resolvedSearchParams.memberId} trainers={trainers} ptPlans={ptPlans} />
+        <FeeForm plans={plans as any} members={members as any} initialMemberId={resolvedSearchParams.memberId} trainers={trainers} ptPlans={ptPlans} defaultAdmissionFee={defaultAdmissionFee} />
       </Card>
     </div>
   );

@@ -24,7 +24,7 @@ interface Member {
   payments: { paymentDate: Date }[];
 }
 
-export default function FeeForm({ plans, members, initialMemberId, trainers, ptPlans }: { plans: Plan[], members: Member[], initialMemberId?: string, trainers: string[], ptPlans: string[] }) {
+export default function FeeForm({ plans, members, initialMemberId, trainers, ptPlans, defaultAdmissionFee }: { plans: Plan[], members: Member[], initialMemberId?: string, trainers: string[], ptPlans: string[], defaultAdmissionFee: number }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -90,7 +90,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
           setPlanId(monthlyPlan.id);
           setAmount((selectedMember.monthlyFeeAmount || monthlyPlan.price) * q);
           if (selectedMember.membershipType === 'Admission + Monthly Membership' && !selectedMember.admissionFeePaid) {
-            setAdmissionFee('2000');
+            setAdmissionFee(defaultAdmissionFee.toString());
           } else {
             setAdmissionFee('0');
           }
@@ -111,8 +111,8 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
     const q = Number(quantity) || 1;
     if (selectedPlan) {
       if (selectedPlan.name === 'Admission + Monthly Membership') {
-        setAmount(800 * q);
-        setAdmissionFee(2000);
+        setAmount(selectedPlan.price * q);
+        setAdmissionFee(defaultAdmissionFee);
       } else {
         setAmount(selectedPlan.price * q);
         setAdmissionFee(0);
@@ -271,7 +271,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
             <label className={styles.label}>Membership Plan *</label>
             <select name="planId" value={planId} onChange={handlePlanChange} className={styles.select} required>
               {plans.map(plan => {
-                const displayPrice = plan.name === 'Admission + Monthly Membership' ? 2800 : plan.price;
+                const displayPrice = plan.name === 'Admission + Monthly Membership' ? (plan.price + defaultAdmissionFee) : plan.price;
                 return <option key={plan.id} value={plan.id}>{plan.name} (₹{displayPrice})</option>
               })}
             </select>
@@ -289,7 +289,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
                 const q = parseInt(qStr) || 1;
                 const selectedPlan = plans.find(p => p.id === planId);
                 if (selectedPlan) {
-                  const basePrice = selectedPlan.name === 'Admission + Monthly Membership' ? 800 : selectedPlan.price;
+                  const basePrice = selectedPlan.price;
                   setAmount(basePrice * q);
                 }
               }} 
