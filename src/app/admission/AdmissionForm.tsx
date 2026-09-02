@@ -44,7 +44,8 @@ export default function AdmissionForm({ plans, defaultAdmissionFee, trainers, pt
     const name = selectedPlan.name;
     
     if (name === 'Admission + Monthly Membership') {
-      setAmount(selectedPlan.price);
+      const baseAmount = selectedPlan.price - defaultAdmissionFee;
+      setAmount(baseAmount > 0 ? baseAmount : 0);
       setAdmissionFee(defaultAdmissionFee);
       setAmountReadOnly(true);
       setAdmissionReadOnly(true);
@@ -248,7 +249,7 @@ We wish you success in achieving your fitness goals and look forward to seeing y
             <label className={styles.label}>Membership Type (Package) *</label>
             <select name="planId" value={planId} onChange={handlePlanChange} className={styles.select} required>
               {plans.map(plan => {
-                const displayPrice = plan.name === 'Admission + Monthly Membership' ? (plan.price + defaultAdmissionFee) : plan.price;
+                const displayPrice = plan.price;
                 return <option key={plan.id} value={plan.id}>{plan.name} (₹{displayPrice})</option>
               })}
             </select>

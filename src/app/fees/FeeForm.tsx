@@ -111,7 +111,8 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
     const q = Number(quantity) || 1;
     if (selectedPlan) {
       if (selectedPlan.name === 'Admission + Monthly Membership') {
-        setAmount(selectedPlan.price * q);
+        const baseAmount = selectedPlan.price - defaultAdmissionFee;
+        setAmount((baseAmount > 0 ? baseAmount : 0) * q);
         setAdmissionFee(defaultAdmissionFee);
       } else {
         setAmount(selectedPlan.price * q);
@@ -271,7 +272,7 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
             <label className={styles.label}>Membership Plan *</label>
             <select name="planId" value={planId} onChange={handlePlanChange} className={styles.select} required>
               {plans.map(plan => {
-                const displayPrice = plan.name === 'Admission + Monthly Membership' ? (plan.price + defaultAdmissionFee) : plan.price;
+                const displayPrice = plan.price;
                 return <option key={plan.id} value={plan.id}>{plan.name} (₹{displayPrice})</option>
               })}
             </select>
@@ -289,8 +290,9 @@ export default function FeeForm({ plans, members, initialMemberId, trainers, ptP
                 const q = parseInt(qStr) || 1;
                 const selectedPlan = plans.find(p => p.id === planId);
                 if (selectedPlan) {
-                  const basePrice = selectedPlan.price;
-                  setAmount(basePrice * q);
+                  const basePrice = selectedPlan.name === 'Admission + Monthly Membership' ? (selectedPlan.price - defaultAdmissionFee) : selectedPlan.price;
+                  const finalBase = basePrice > 0 ? basePrice : 0;
+                  setAmount(finalBase * q);
                 }
               }} 
               style={{ width: '100%', padding: '10px 16px', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-main)' }}
